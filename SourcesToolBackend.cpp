@@ -50,7 +50,7 @@ void SourcesToolBackend::getEntityByQID(std::string qid) {
     input >> entity;
 
     response().content_type("application/json");
-    response().out() << entity;
+    entity.save(response().out(), cppcms::json::readable);
 
     clock_t end = std::clock();
     std::cout << "GET /entities/" << qid << " time: " << 1000 * (double(end - begin) / CLOCKS_PER_SEC) << "ms" << std::endl;
@@ -74,7 +74,7 @@ void SourcesToolBackend::getEntityByTopicUser() {
     input >> entity;
 
     response().content_type("application/json");
-    response().out() << entity;
+    entity.save(response().out(), cppcms::json::readable);
 
     clock_t end = std::clock();
     std::cout << "GET /entities/any time: " << 1000 * (double(end - begin) / CLOCKS_PER_SEC) << "ms" << std::endl;

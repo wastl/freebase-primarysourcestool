@@ -4,7 +4,7 @@
 
 The following HTTP request retrieves an entity by Wikidata QID:
 
-    GET /entity/<QID>.json
+    GET /entities/<QID>.json
       
 The service is modelled after the Wikidata REST API, but currently only supports retrieving JSON format.
     
@@ -20,7 +20,7 @@ Status Codes:
 The following HTTP request retrieves a random entity, optionally by topic. The selection procedure is
 left to the backend and might be improved in the future based on user profile etc.
 
-    GET /entity?topic=<TOPIC>&user=<WikidataUser>
+    GET /entities/any?topic=<TOPIC>&user=<WikidataUser>
       
 Both topic and user are optional, in which case the backend selects a random unapproved entity.
     
@@ -34,7 +34,7 @@ Status Codes:
 
 The following HTTP request marks an entity identified by a Wikidata QID as approved:
 
-    POST /entity/<QID>?approved=true&user=<WikidataUser>
+    POST /entities/<QID>?approved=true&user=<WikidataUser>
     
 The WikidataUser passed as argument is used for tracking purposes only and stored in the database together with
 the approval flag.
