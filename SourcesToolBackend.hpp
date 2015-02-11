@@ -62,6 +62,10 @@ public:
     *     500: server error
     */
     void approveEntity(std::string qid);
+
+private:
+
+    void handleGetPostEntity(std::string);
 };
 
 #endif
