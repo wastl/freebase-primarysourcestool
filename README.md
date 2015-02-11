@@ -46,3 +46,30 @@ Status Codes:
   * 500: server error
   
  
+# Building and Installation
+
+The REST application is implemented in C++ using the [CppCMS](http://cppcms.com/) framework. Building the
+application requires that you first download and install both frameworks and their dependencies (follow 
+instructions on CppCMS webpage).
+
+## Build from Source
+
+The sources tool uses cmake for building the server. Please use the following commands to create the binary.
+
+    $ mkdir build && cd build
+    $ cmake ..
+    $ make
+    
+## Start Server
+    
+The binary can be started both as a standalone application for testing and as FastCGI binary to use in
+Apache or lighttpd. For testing purposes, simply start the server with the following command:
+    
+    $ cd build
+    $ ./freebase_backend -c ../config.json    
+    
+You can now access the running system at http://localhost:8080 and issue REST requests, e.g.
+
+    curl -X GET http://localhost:8080/entities/any
+
+For deployment, please follow the instructions on the [CppCMS Webpage](http://cppcms.com/).    
