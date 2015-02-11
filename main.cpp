@@ -56,8 +56,10 @@ public:
     }
 
     void welcome() {
+        std::string name = request().get("name");
+
         response().out() <<
-                "<h1> Welcome To Page with links </h1>\n"
+                "<h1> Welcome To Page with links, " << name << "</h1>\n"
                 "<a href='" << url("/number", 1) << "'>1</a><br>\n"
                 "<a href='" << url("/number", 15) << "'>15</a><br>\n"
                 "<a href='" << url("/data") << "' >Get Data</a><br>\n"
