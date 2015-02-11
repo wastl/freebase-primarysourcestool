@@ -4,9 +4,9 @@
 
 The following HTTP request retrieves an entity by Wikidata QID:
 
-    GET /entities/<QID>.json
+    GET /entities/<QID>
       
-The service is modelled after the Wikidata REST API, but currently only supports retrieving JSON format.
+The service is modeled after the Wikidata REST API, but currently only supports retrieving data in JSON format.
     
 Status Codes:
 
