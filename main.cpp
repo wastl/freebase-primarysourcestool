@@ -1,4 +1,4 @@
-#include "SourcesToolBackend.hpp"
+#include "SourcesToolService.hpp"
 
 #include <cppcms/applications_pool.h>
 #include <cppcms/service.h>
@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
     try {
         cppcms::service srv(argc, argv);
         srv.applications_pool().mount(
-                cppcms::applications_factory<SourcesToolBackend>()
+                cppcms::applications_factory<SourcesToolService>()
         );
         srv.run();
 

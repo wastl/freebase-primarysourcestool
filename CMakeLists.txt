@@ -18,6 +18,6 @@ find_package (CPPCMS REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_executable(freebase_backend main.cpp SourcesToolBackend.cpp)
+add_executable(freebase_backend main.cpp SourcesToolService.cpp)
 
 target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} )

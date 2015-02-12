@@ -1,4 +1,4 @@
-#include "SourcesToolBackend.hpp"
+#include "SourcesToolService.hpp"
 
 #include <cppcms/service.h>
 #include <cppcms/http_response.h>
@@ -8,25 +8,25 @@
 #include <fstream>
 
 
-SourcesToolBackend::SourcesToolBackend(cppcms::service &srv)
+SourcesToolService::SourcesToolService(cppcms::service &srv)
         : cppcms::application(srv) {
 
     // map GET and POST requests to /entities/<QID> to the respective handlers
     // we use a helper function to distinguish both cases, since cppcms
     // currently does not really support REST
     dispatcher().assign("/entities/(Q\\d+)",
-            &SourcesToolBackend::handleGetPostEntity, this, 1);
+            &SourcesToolService::handleGetPostEntity, this, 1);
     mapper().assign("entity_by_qid", "/entities/{1}");
 
     // map request to random entity selector
     dispatcher().assign("/entities/any",
-            &SourcesToolBackend::getEntityByTopicUser, this);
+            &SourcesToolService::getEntityByTopicUser, this);
     mapper().assign("entity_by_topic_user", "/entities/any");
 
 }
 
 
-void SourcesToolBackend::handleGetPostEntity(std::string qid) {
+void SourcesToolService::handleGetPostEntity(std::string qid) {
     if(request().request_method() == "POST") {
         approveEntity(qid);
     } else {
@@ -34,7 +34,7 @@ void SourcesToolBackend::handleGetPostEntity(std::string qid) {
     }
 }
 
-void SourcesToolBackend::getEntityByQID(std::string qid) {
+void SourcesToolService::getEntityByQID(std::string qid) {
     clock_t begin = std::clock();
 
     // currently always return the test QID
@@ -56,7 +56,7 @@ void SourcesToolBackend::getEntityByQID(std::string qid) {
     std::cout << "GET /entities/" << qid << " time: " << 1000 * (double(end - begin) / CLOCKS_PER_SEC) << "ms" << std::endl;
 }
 
-void SourcesToolBackend::getEntityByTopicUser() {
+void SourcesToolService::getEntityByTopicUser() {
     // currently always return the test QID
 
     clock_t begin = std::clock();
@@ -80,7 +80,7 @@ void SourcesToolBackend::getEntityByTopicUser() {
     std::cout << "GET /entities/any time: " << 1000 * (double(end - begin) / CLOCKS_PER_SEC) << "ms" << std::endl;
 }
 
-void SourcesToolBackend::approveEntity(std::string qid) {
+void SourcesToolService::approveEntity(std::string qid) {
     clock_t begin = std::clock();
 
     if(request().get("approved") != "true") {

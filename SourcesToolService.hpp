@@ -6,15 +6,15 @@
 #include <cppcms/application.h>
 
 
-class SourcesToolBackend : public cppcms::application {
+class SourcesToolService : public cppcms::application {
 
 public:
 
     /**
-    * Initialise SourcesToolBackend. Registers URL mappers and initialises a
+    * Initialise SourcesToolService. Registers URL mappers and initialises a
     * database connection to access the entity data.
     */
-    SourcesToolBackend(cppcms::service &srv);
+    SourcesToolService(cppcms::service &srv);
 
     /**
     * Return the entity identified by the given QID and write it to the
