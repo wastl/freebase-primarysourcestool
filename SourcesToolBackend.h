@@ -4,16 +4,24 @@
 #include "Statement.h"
 
 #include <vector>
+#include <map>
 #include <string>
 
 class SourcesToolBackend {
-
 public:
+    explicit SourcesToolBackend(const std::string& db_path)
+            : db_path(db_path), initialised(false) {}
 
     std::vector<Statement> getStatementsByQID(std::string &qid, bool approved);
 
     std::vector<Statement> getStatementsByTopic(std::string &topic, int count);
 
+private:
+    void init();
+
+    std::map<std::string,std::vector<Statement>> statements;
+    std::string db_path;
+    bool initialised;
 };
 
 

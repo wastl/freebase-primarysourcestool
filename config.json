@@ -6,5 +6,5 @@
     "http" : {
         "script_names" : [ "/hello" ]
     },
-    "datafile": "../data/Q1.json"
+    "datafile": "../data/p27.txt.gz"
 }

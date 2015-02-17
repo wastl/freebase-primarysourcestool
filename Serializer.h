@@ -13,6 +13,9 @@ namespace Serializer {
 
     /**
     * Write a collection of statements to an output stream as JSON.
+    * Uses the WikiData JSON format documented at
+    * https://www.mediawiki.org/wiki/Wikibase/Notes/JSON .
+    * Each statement is represented as a "claim" in the Wikidata terminology.
     */
     template<typename Iterator>
     void writeJSON(Iterator begin, Iterator end, std::ostream &out) {

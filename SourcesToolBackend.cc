@@ -11,16 +11,14 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/tokenizer.hpp>
 
-std::vector<Statement> SourcesToolBackend::getStatementsByQID(std::string & qid, bool approved){
-    std::vector<Statement> stmts;
+void SourcesToolBackend::init() {
 
-    std::ifstream file("../data/p27.txt.gz", std::ios_base::in | std::ios_base::binary);
+    std::ifstream file(db_path, std::ios_base::in | std::ios_base::binary);
 
     if(file.fail()) {
         std::cerr << "could not open data file" << std::endl;
-        return stmts;
+        return;
     }
-
 
     boost::iostreams::filtering_istreambuf zin;
     zin.push(boost::iostreams::gzip_decompressor());
@@ -41,16 +39,22 @@ std::vector<Statement> SourcesToolBackend::getStatementsByQID(std::string & qid,
         Tokenizer tok(line, sep);
         vec.assign(tok.begin(),tok.end());
 
-        id++;
-        if(vec[0] == qid) {
-            Statement stmt(id,vec[0], vec[1], Value(vec[2]));
-            stmts.push_back(stmt);
-        }
+        Statement stmt(id++,vec[0], vec[1], Value(vec[2]));
+        statements[vec[0]];
+        statements[vec[0]].push_back(stmt);
     }
 
     std::cout << "scanned " << id << " lines " << std::endl;
 
-    return stmts;
+    initialised = true;
+
+}
+
+std::vector<Statement> SourcesToolBackend::getStatementsByQID(std::string & qid, bool approved){
+    if(!initialised) {
+        init();
+    }
+    return statements[qid];
 }
 
 std::vector<Statement> SourcesToolBackend::getStatementsByTopic(std::string &topic, int count) {

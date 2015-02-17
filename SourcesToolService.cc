@@ -12,7 +12,7 @@
 #include "Statement.h"
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
-        : cppcms::application(srv) {
+        : cppcms::application(srv), backend(settings()["datafile"].str()) {
     // map GET and POST requests to /entities/<QID> to the respective handlers
     // we use a helper function to distinguish both cases, since cppcms
     // currently does not really support REST
