@@ -19,6 +19,6 @@ find_package (Boost 1.55.0 REQUIRED COMPONENTS iostreams)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_executable(freebase_backend main.cpp SourcesToolService.cpp SourcesToolBackend.cpp)
+add_executable(freebase_backend main.cc SourcesToolService.cc SourcesToolBackend.cc)
 
 target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} ${Boost_LIBRARIES})

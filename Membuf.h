@@ -1,5 +1,5 @@
-#ifndef HAVE_MEMBUF_HPP
-#define HAVE_MEMBUF_HPP 1
+#ifndef HAVE_MEMBUF_H_
+#define HAVE_MEMBUF_H_
 
 #include <streambuf>
 
@@ -23,4 +23,4 @@ public:
     std::size_t read() const    { return this->gptr() - this->eback(); }
 };
 
-#endif
+#endif // HAVE_MEMBUF_H_

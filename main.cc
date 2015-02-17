@@ -1,4 +1,4 @@
-#include "SourcesToolService.hpp"
+#include "SourcesToolService.h"
 
 #include <cppcms/applications_pool.h>
 #include <cppcms/service.h>

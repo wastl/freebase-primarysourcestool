@@ -1,10 +1,11 @@
-#include "SourcesToolBackend.hpp"
+#include "SourcesToolBackend.h"
 
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>    // copy
+
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
@@ -42,7 +43,7 @@ std::vector<Statement> SourcesToolBackend::getStatementsByQID(std::string & qid,
 
         id++;
         if(vec[0] == qid) {
-            Statement stmt(id,vec[0], vec[1], vec[2]);
+            Statement stmt(id,vec[0], vec[1], Value(vec[2]));
             stmts.push_back(stmt);
         }
     }

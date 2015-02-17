@@ -1,7 +1,7 @@
-#ifndef HAVE_SOURCESTOOL_BACKEND_HPP
-#define HAVE_SOURCESTOOL_BACKEND_HPP 1
+#ifndef HAVE_SOURCESTOOL_BACKEND_H_
+#define HAVE_SOURCESTOOL_BACKEND_H_
 
-#include "Statement.hpp"
+#include "Statement.h"
 
 #include <vector>
 #include <string>
@@ -17,4 +17,4 @@ public:
 };
 
 
-#endif
+#endif // HAVE_SOURCESTOOL_BACKEND_H_

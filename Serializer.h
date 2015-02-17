@@ -1,11 +1,12 @@
-#ifndef HAVE_SERIALIZER_HPP
-#define HAVE_SERIALIZER_HPP 1
-
-#include "Statement.hpp"
+#ifndef HAVE_SERIALIZER_H_
+#define HAVE_SERIALIZER_H_
 
 #include <iostream>
 #include <vector>
+
 #include <cppcms/json.h>
+
+#include "Statement.h"
 
 namespace Serializer {
 
@@ -47,4 +48,4 @@ namespace Serializer {
 
 }
 
-#endif
+#endif // HAVE_SERIALIZER_H_

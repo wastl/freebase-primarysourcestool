@@ -1,16 +1,15 @@
-#ifndef HAVE_SOURCESTOOLSERVICE_HPP
-#define HAVE_SOURCESTOOLSERVICE_HPP 1
-
-#include <string>
+#ifndef HAVE_SOURCESTOOLSERVICE_H_
+#define HAVE_SOURCESTOOLSERVICE_H_
 
 #include <cppcms/application.h>
+
+#include <string>
 #include <map>
-#include "SourcesToolBackend.hpp"
+
+#include "SourcesToolBackend.h"
 
 class SourcesToolService : public cppcms::application {
-
-public:
-
+ public:
     /**
     * Initialise SourcesToolService. Registers URL mappers and initialises a
     * database connection to access the entity data.
@@ -64,11 +63,11 @@ public:
     */
     void approveEntity(std::string qid);
 
-private:
+ private:
+    void handleGetPostEntity(std::string);
 
     SourcesToolBackend backend;
 
-    void handleGetPostEntity(std::string);
 };
 
-#endif
+#endif  // HAVE_SOURCESTOOLSERVICE_H_
