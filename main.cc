@@ -1,3 +1,6 @@
+// Copyright 2015 Google Inc. All Rights Reserved.
+// Author: Sebastian Schaffert <schaffert@google.com>
+
 #include "SourcesToolService.h"
 
 #include <cppcms/applications_pool.h>

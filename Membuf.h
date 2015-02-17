@@ -1,3 +1,6 @@
+// Copyright 2015 Google Inc. All Rights Reserved.
+// Author: Sebastian Schaffert <schaffert@google.com>
+
 #ifndef HAVE_MEMBUF_H_
 #define HAVE_MEMBUF_H_
 

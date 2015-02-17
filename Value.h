@@ -1,3 +1,6 @@
+// Copyright 2015 Google Inc. All Rights Reserved.
+// Author: Sebastian Schaffert <schaffert@google.com>
+
 #ifndef HAVE_VALUE_H_
 #define HAVE_VALUE_H_
 
