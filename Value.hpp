@@ -1,6 +1,7 @@
 #ifndef HAVE_VALUE_HPP
-#define HAVE_VALUE_HPP
+#define HAVE_VALUE_HPP 1
 
+#include <iostream>
 #include <string>
 
 enum ValueType {
@@ -31,6 +32,7 @@ public:
         return type;
     }
 
+    operator const std::string& () const { return value; }
 private:
 
     std::string value, language;
@@ -38,5 +40,9 @@ private:
     ValueType type;
 
 };
+
+inline std::ostream& operator<<(std::ostream &out, const Value &v) {
+    return out << v.getValue();
+}
 
 #endif

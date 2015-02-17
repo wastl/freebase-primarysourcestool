@@ -28,12 +28,11 @@ namespace Serializer {
                 entities["entities"][qid][prop][lang]["language"] = lang;
             }
 
-            std::cout << "processed (" << qid << "," <<prop<<","<<stmt.getValue().getValue()<<")"<<std::endl;
+            std::cout << "processed (" << qid << "," <<prop<<","<<stmt.getValue()<<")"<<std::endl;
         }
 
         entities.save(out, cppcms::json::readable);
     }
-
 
     template<typename Iterator>
     void write(std::string format, Iterator begin, Iterator end, std::ostream &out) {
