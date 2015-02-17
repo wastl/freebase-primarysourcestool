@@ -5,7 +5,9 @@
 #define HAVE_STATEMENT_H_
 
 #include <string>
+#include <vector>
 
+#include "Qualifier.h"
 #include "Value.h"
 
 enum ApprovalState {
@@ -21,14 +23,15 @@ enum ApprovalState {
 class Statement {
  public:
     Statement(int64_t id, const std::string &qid, const std::string &property,
-              const Value  &value)
+              const Value  &value, std::vector<Qualifier> &qualifiers)
             : id(id), qid(qid), property(property), value(value),
-              approved(UNAPPROVED) { }
+              qualifiers(qualifiers), approved(UNAPPROVED) { }
 
     Statement(int64_t id, const std::string &qid, const std::string &property,
-              const Value &value, ApprovalState const &approved)
+              const Value &value, std::vector<Qualifier> &qualifiers,
+              ApprovalState const &approved)
             : id(id), qid(qid), property(property), value(value),
-              approved(approved) { }
+              qualifiers(qualifiers), approved(approved) { }
 
 
     // default copy constructor and assignment operator
@@ -54,10 +57,14 @@ class Statement {
     const std::string& getProperty() const { return property; }
 
 
-    const Value& getValue() const { return value; }
+    Value const &getValue() const { return value; }
 
 
-    /**
+    const std::vector<Qualifier> &getQualifiers() const {
+        return qualifiers;
+    }
+
+/**
     * Return true if this statement has already been approved, false otherwise.
     */
     ApprovalState getApprovalState() const { return approved; }
@@ -68,6 +75,8 @@ class Statement {
     std::string qid, property;
 
     Value value;
+
+    std::vector<Qualifier> qualifiers;
 
     ApprovalState approved;
 };

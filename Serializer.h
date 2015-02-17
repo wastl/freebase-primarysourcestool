@@ -13,6 +13,49 @@
 
 namespace Serializer {
 
+    /**
+    * Write a collection of statements to an output stream as JSON.
+    * Uses a JSON format resembling RDF/JSON but extended by some
+    * Wikidata specific elements. Also, since we do not need to support
+    * blank nodes and resources are identified with plain identifiers,
+    * the format is significantly shorter.
+    *
+    * https://dvcs.w3.org/hg/rdf/raw-file/default/rdf-json/index.html
+    */
+    template<typename Iterator>
+    void writePlainJSON(Iterator begin, Iterator end, std::ostream &out) {
+
+        cppcms::json::value result;
+
+        for(const Statement &stmt = *begin; begin != end; ++begin) {
+            const std::string& lang = stmt.getValue().getLanguage();
+            const std::string& prop = stmt.getProperty();
+            const std::string& qid  = stmt.getQID();
+
+
+            cppcms::json::value value;
+            value["id"] = stmt.getID();
+            if(lang != "") {
+                value["lang"] = lang;
+            }
+            value["value"] = stmt.getValue().getValue();
+            if (stmt.getValue().getType() == CONCEPT) {
+                value["type"] = "entity";
+            } else {
+                value["type"] = "literal";
+            }
+
+            if(result[qid][prop].type() != cppcms::json::is_array) {
+                result[qid][prop] = { value };
+            } else {
+                result[qid][prop].array().push_back(value);
+            }
+
+            std::cout << "processed (" << qid << "," <<prop<<","<<stmt.getValue()<<")"<<std::endl;
+        }
+
+        result.save(out, cppcms::json::readable);
+    }
 
     /**
     * Write a collection of statements to an output stream as JSON.
@@ -21,7 +64,7 @@ namespace Serializer {
     * Each statement is represented as a "claim" in the Wikidata terminology.
     */
     template<typename Iterator>
-    void writeJSON(Iterator begin, Iterator end, std::ostream &out) {
+    void writeWikidataJSON(Iterator begin, Iterator end, std::ostream &out) {
 
         cppcms::json::value entities;
 
@@ -61,11 +104,11 @@ namespace Serializer {
 
     template<typename Iterator>
     void write(std::string format, Iterator begin, Iterator end, std::ostream &out) {
-        if(format == "application/json") {
-            writeJSON(begin, end, out);
+        if(format == "application/wikidata+json") {
+            writeWikidataJSON(begin, end, out);
         } else {
             // other serializers not yet supported
-            writeJSON(begin, end, out);
+            writePlainJSON(begin, end, out);
         }
     }
 

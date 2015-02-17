@@ -42,7 +42,9 @@ void SourcesToolBackend::init() {
         Tokenizer tok(line, sep);
         vec.assign(tok.begin(),tok.end());
 
-        Statement stmt(id++,vec[0], vec[1], Value(vec[2]));
+        std::vector<Qualifier> qualifiers; // TODO
+
+        Statement stmt(id++,vec[0], vec[1], Value(vec[2]), qualifiers);
         statements[vec[0]];
         statements[vec[0]].push_back(stmt);
     }
