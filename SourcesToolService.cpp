@@ -1,4 +1,5 @@
 #include "SourcesToolService.hpp"
+#include "Serializer.hpp"
 
 #include <cppcms/service.h>
 #include <cppcms/http_response.h>

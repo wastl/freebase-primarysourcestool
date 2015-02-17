@@ -4,6 +4,7 @@
 #include <string>
 
 #include <cppcms/application.h>
+#include <map>
 
 
 class SourcesToolService : public cppcms::application {
