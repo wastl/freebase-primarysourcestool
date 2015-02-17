@@ -5,13 +5,23 @@
 
 #include "Value.hpp"
 
+enum ApprovalState {
+    APPROVED, UNAPPROVED, OTHERSOURCE, WRONG, SKIPPED
+};
+
 class Statement {
 
 public:
 
+    Statement(long id, std::string &qid, std::string &property, Value const &value)
+            : id(id), qid(qid), property(property), value(value), approved(UNAPPROVED) {
+    }
 
+    Statement(long id, std::string &qid, std::string &property, Value const &value, ApprovalState const &approved)
+            : id(id), qid(qid), property(property), value(value), approved(approved) {
+    }
 
-    /**
+/**
     * Return the (internal) database ID of the statement. Used for unique
     * identification purposes within the system.
     */
@@ -35,7 +45,7 @@ public:
     /**
     * Return true if this statement has already been approved, false otherwise.
     */
-    bool isApproved() const { return approved; };
+    ApprovalState getApprovalState() const { return approved; };
 
 
 
@@ -47,7 +57,7 @@ private:
 
     Value value;
 
-    bool approved;
+    ApprovalState approved;
 
 };
 

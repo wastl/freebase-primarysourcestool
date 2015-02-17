@@ -1,5 +1,6 @@
 #include "SourcesToolService.hpp"
 #include "Serializer.hpp"
+#include "Statement.hpp"
 
 #include <cppcms/service.h>
 #include <cppcms/http_response.h>
@@ -38,20 +39,16 @@ void SourcesToolService::handleGetPostEntity(std::string qid) {
 void SourcesToolService::getEntityByQID(std::string qid) {
     clock_t begin = std::clock();
 
-    // currently always return the test QID
-    std::ifstream input(settings()["datafile"].str());
+    std::vector<Statement> statements = backend.getStatementsByQID(qid, false);
 
-    if(input.fail()) {
-        response().status(404, "could not open data file, please specify path in config.json");
-        return;
+    if(statements.size() > 0) {
+
+        response().content_type("application/json");
+
+        Serializer::write("application/json", statements.cbegin(), statements.cend(), response().out());
+    } else {
+        response().status(404, "no statements found for entity "+qid);
     }
-
-    cppcms::json::value entity;
-
-    input >> entity;
-
-    response().content_type("application/json");
-    entity.save(response().out(), cppcms::json::readable);
 
     clock_t end = std::clock();
     std::cout << "GET /entities/" << qid << " time: " << 1000 * (double(end - begin) / CLOCKS_PER_SEC) << "ms" << std::endl;

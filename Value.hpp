@@ -3,13 +3,19 @@
 
 #include <string>
 
+enum ValueType {
+    CONCEPT, LITERAL, LANG_LITERAL
+};
+
 class Value {
 
 
 public:
 
+    Value(std::string &value) : value(value), type(CONCEPT) {
+    }
 
-    Value(std::string &value, std::string &language, std::string &type)
+    Value(std::string &value, std::string &language, ValueType type)
             : value(value), language(language), type(type) { }
 
 
@@ -21,13 +27,15 @@ public:
         return language;
     }
 
-    const std::string &getType() const {
+    ValueType getType() const {
         return type;
     }
 
 private:
 
-    std::string value, language, type;
+    std::string value, language;
+
+    ValueType type;
 
 };
 

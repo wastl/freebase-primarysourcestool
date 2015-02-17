@@ -15,9 +15,10 @@ ADD_DEFINITIONS(
 
 find_package (Threads)
 find_package (CPPCMS REQUIRED)
+find_package (Boost 1.55.0 REQUIRED COMPONENTS iostreams)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_executable(freebase_backend main.cpp SourcesToolService.cpp Serializer.cpp SerializerJSON.cpp)
+add_executable(freebase_backend main.cpp SourcesToolService.cpp SourcesToolBackend.cpp)
 
-target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} )
+target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} ${Boost_LIBRARIES})

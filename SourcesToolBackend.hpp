@@ -1,6 +1,11 @@
 #ifndef HAVE_SOURCESTOOL_BACKEND_HPP
 #define HAVE_SOURCESTOOL_BACKEND_HPP 1
 
+#include "Statement.hpp"
+
+#include <vector>
+#include <string>
+
 class SourcesToolBackend {
 
 public:

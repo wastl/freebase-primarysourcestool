@@ -3,27 +3,49 @@
 
 #include "Statement.hpp"
 
-#include <iosfwd>
+#include <iostream>
 #include <vector>
+#include <cppcms/json.h>
 
-/**
-* Interface for serializer implementations. A serializer has to implement at
-* least the write function.
-*/
-class Serializer {
-
-public:
-
-    virtual void write(std::ostream &out) {};
+namespace Serializer {
 
 
-    Serializer& operator<<(Statement&);
+    /**
+    * Write a collection of statements to an output stream as JSON.
+    */
+    template<typename Iterator>
+    void writeJSON(Iterator begin, Iterator end, std::ostream &out) {
 
-protected:
+        cppcms::json::value entities;
 
-    std::vector<Statement> statements;
-};
+        for(const Statement &stmt = *begin; begin != end; ++begin) {
+            const std::string& lang = stmt.getValue().getLanguage();
+            const std::string& prop = stmt.getProperty();
+            const std::string& qid  = stmt.getQID();
+
+            entities["entities"][qid][prop][lang]["value"] = stmt.getValue().getValue();
+            if(stmt.getValue().getType() == LANG_LITERAL) {
+                entities["entities"][qid][prop][lang]["language"] = lang;
+            }
+
+            std::cout << "processed (" << qid << "," <<prop<<","<<stmt.getValue().getValue()<<")"<<std::endl;
+        }
+
+        entities.save(out, cppcms::json::readable);
+    }
 
 
+    template<typename Iterator>
+    void write(std::string format, Iterator begin, Iterator end, std::ostream &out) {
+        if(format == "application/json") {
+            writeJSON(begin, end, out);
+        } else {
+            // other serializers not yet supported
+            writeJSON(begin, end, out);
+        }
+    }
+
+
+}
 
 #endif

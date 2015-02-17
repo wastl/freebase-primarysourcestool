@@ -5,7 +5,7 @@
 
 #include <cppcms/application.h>
 #include <map>
-
+#include "SourcesToolBackend.hpp"
 
 class SourcesToolService : public cppcms::application {
 
@@ -65,6 +65,8 @@ public:
     void approveEntity(std::string qid);
 
 private:
+
+    SourcesToolBackend backend;
 
     void handleGetPostEntity(std::string);
 };
