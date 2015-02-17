@@ -8,6 +8,11 @@ enum ValueType {
     CONCEPT, LITERAL, LANG_LITERAL
 };
 
+/**
+* Representation of an object value of a statement. Can either represent
+* another concept, a literal value (e.g. a number), or a literal value
+* with language (e.g. a string).
+*/
 class Value {
  public:
     explicit Value(const std::string &value)

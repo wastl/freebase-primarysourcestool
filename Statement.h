@@ -9,6 +9,12 @@ enum ApprovalState {
     APPROVED, UNAPPROVED, OTHERSOURCE, WRONG, SKIPPED
 };
 
+/**
+* Representation of a Freebase/Wikidata statement to be approved by users.
+* Similar to RDF triples, but a simplified model without blank nodes. For each
+* statement we also store an internal (database) ID that allows to uniquely
+* identify the statement, and the current state of approval.
+*/
 class Statement {
  public:
     Statement(int64_t id, const std::string &qid, const std::string &property,

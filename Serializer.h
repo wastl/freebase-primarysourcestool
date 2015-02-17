@@ -24,15 +24,33 @@ namespace Serializer {
             const std::string& prop = stmt.getProperty();
             const std::string& qid  = stmt.getQID();
 
-            entities["entities"][qid][prop][lang]["value"] = stmt.getValue().getValue();
-            if(stmt.getValue().getType() == LANG_LITERAL) {
-                entities["entities"][qid][prop][lang]["language"] = lang;
+            entities[qid]["claims"][prop]["id"] = stmt.getID();
+            entities[qid]["claims"][prop]["type"] = "claim";
+            entities[qid]["claims"][prop]["rank"] = "normal";
+
+            cppcms::json::value snak;
+            snak["snaktype"] = "value";
+            snak["property"] = prop;
+
+            if (stmt.getValue().getType() == CONCEPT) {
+                snak["datavalue"]["type"] = "wikibase-entityid";
+                snak["datavalue"]["value"]["entity-type"] = "item";
+                snak["datavalue"]["value"]["numeric-id"] = atol(stmt.getValue().getValue().substr(1).c_str());
+            } else {
+                snak["datavalue"]["value"] = stmt.getValue().getValue();
+                snak["datavalue"]["type"] = "string";
+                if(stmt.getValue().getType() == LANG_LITERAL) {
+                    snak["datavalue"]["language"] = lang;
+                }
             }
+            entities[qid]["claims"][prop]["mainsnak"] = snak;
 
             std::cout << "processed (" << qid << "," <<prop<<","<<stmt.getValue()<<")"<<std::endl;
         }
 
-        entities.save(out, cppcms::json::readable);
+        cppcms::json::value result;
+        result["entities"] = entities;
+        result.save(out, cppcms::json::readable);
     }
 
     template<typename Iterator>
