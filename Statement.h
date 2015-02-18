@@ -6,7 +6,8 @@
 
 #include <string>
 #include <vector>
-#include <elf.h>
+
+#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include "Qualifier.h"
 #include "Value.h"
@@ -20,6 +21,27 @@ enum ValueType {
 };
 
 
+// define decimal datatype to represent wikidata quantities as multi-
+// precision
+typedef boost::multiprecision::cpp_dec_float_50 decimal_t;
+
+// define locations as pairs of doubles
+typedef std::pair<double,double> location_t;
+
+// define values as either string, time, location or quantity
+union Value {
+    std::string str;
+    time_t      time;
+    location_t  loc;
+    decimal_t   quantity;
+
+    Value(std::string s) : str(s) { }
+    Value(time_t t) : time(t) { }
+    Value(location_t l) : loc(l) { }
+    Value(decimal_t d) : quantity(d) { }
+};
+
+
 /**
 * Property-value pair, also called 'snak' in Wikidata terminology. Used to
 * represent the primary property and value, as well as qualifiers and sources.
@@ -28,11 +50,13 @@ enum ValueType {
 * described at http://tools.wmflabs.org/wikidata-todo/quick_statements.php
 */
 class PropertyValue {
+
+
 public:
 
 
     PropertyValue(std::string property, std::string value,
-                  std::string lang, ValueType type)
+                  std::string lang, value_t type)
             : property(property), value(value), language(lang), type(type) {
     }
 
@@ -45,7 +69,7 @@ public:
         return property;
     }
 
-    const std::string &getValue() const {
+    const Value &getValue() const {
         return value;
     }
 
@@ -58,7 +82,9 @@ public:
     }
 
 private:
-    std::string property, value, language;
+    std::string property, language;
+
+    Value value;
 
     ValueType type;
 
