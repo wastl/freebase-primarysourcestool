@@ -6,12 +6,62 @@
 
 #include <string>
 #include <vector>
+#include <elf.h>
 
 #include "Qualifier.h"
 #include "Value.h"
 
 enum ApprovalState {
     APPROVED, UNAPPROVED, OTHERSOURCE, WRONG, SKIPPED
+};
+
+enum ValueType {
+    ITEM, STRING, TIME, LOCATION, QUANTITY
+};
+
+
+/**
+* Property-value pair, also called 'snak' in Wikidata terminology. Used to
+* represent the primary property and value, as well as qualifiers and sources.
+*
+* All value types are represented internally using the string representation
+* described at http://tools.wmflabs.org/wikidata-todo/quick_statements.php
+*/
+class PropertyValue {
+public:
+
+
+    PropertyValue(std::string property, std::string value,
+                  std::string lang, ValueType type)
+            : property(property), value(value), language(lang), type(type) {
+    }
+
+    // default copy constructor and assignment operator
+    PropertyValue(const PropertyValue& other) = default;
+    PropertyValue& operator=(const PropertyValue& other) = default;
+
+
+    const std::string &getProperty() const {
+        return property;
+    }
+
+    const std::string &getValue() const {
+        return value;
+    }
+
+    const std::string &getLanguage() const {
+        return language;
+    }
+
+    const ValueType &getType() const {
+        return type;
+    }
+
+private:
+    std::string property, value, language;
+
+    ValueType type;
+
 };
 
 /**
@@ -21,17 +71,18 @@ enum ApprovalState {
 * identify the statement, and the current state of approval.
 */
 class Statement {
- public:
-    Statement(int64_t id, const std::string &qid, const std::string &property,
-              const Value  &value, std::vector<Qualifier> &qualifiers)
-            : id(id), qid(qid), property(property), value(value),
-              qualifiers(qualifiers), approved(UNAPPROVED) { }
 
-    Statement(int64_t id, const std::string &qid, const std::string &property,
-              const Value &value, std::vector<Qualifier> &qualifiers,
-              ApprovalState const &approved)
-            : id(id), qid(qid), property(property), value(value),
-              qualifiers(qualifiers), approved(approved) { }
+typedef std::vector<PropertyValue> extensions_t;
+
+ public:
+
+
+    // main constructor; will be called usually in a parser or with database results
+    // so we use copy by value and rely on the compiler to optimize using rvalues
+    Statement(int64_t id, std::string qid, PropertyValue propertyValue,
+              extensions_t qualifiers, extensions_t sources, ApprovalState approved)
+            : id(id), qid(qid), propertyValue(propertyValue),
+              qualifiers(qualifiers), sources(sources), approved(approved) { }
 
 
     // default copy constructor and assignment operator
@@ -54,17 +105,29 @@ class Statement {
     /**
     * Return the Wikidata property of the statement.
     */
-    const std::string& getProperty() const { return property; }
+    const std::string& getProperty() const {
+        return propertyValue.getProperty();
+    }
 
 
-    Value const &getValue() const { return value; }
+    const std::string &getValue() const {
+        return propertyValue.getValue();
+    }
 
 
-    const std::vector<Qualifier> &getQualifiers() const {
+    const PropertyValue &getPropertyValue() const {
+        return propertyValue;
+    }
+
+    const extensions_t &getQualifiers() const {
         return qualifiers;
     }
 
-/**
+    const extensions_t &getSources() const {
+        return sources;
+    }
+
+    /**
     * Return true if this statement has already been approved, false otherwise.
     */
     ApprovalState getApprovalState() const { return approved; }
@@ -72,11 +135,13 @@ class Statement {
  private:
     int64_t id;
 
-    std::string qid, property;
+    std::string qid;
 
-    Value value;
+    PropertyValue propertyValue;
 
-    std::vector<Qualifier> qualifiers;
+    extensions_t qualifiers;
+    extensions_t sources;
+
 
     ApprovalState approved;
 };
