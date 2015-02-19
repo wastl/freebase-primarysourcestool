@@ -13,6 +13,7 @@
 
 #include "Parser.h"
 #include "SerializerTSV.h"
+#include "Persistence.h"
 
 int main(int argc, char **argv) {
     try {
@@ -34,16 +35,21 @@ int main(int argc, char **argv) {
 
         cppdb::session sql("sqlite3:db=fb.db");
 
-        cppdb::statement sql_add_snak_item=sql.prepare("INSERT INTO snak(property,svalue,vtype) VALUES (?,?,'item')");
-        cppdb::statement sql_add_snak_string=sql.prepare("INSERT INTO snak(property,svalue,lang,vtype) VALUES (?,?,?,'string')");
-        cppdb::statement sql_add_snak_quantity=sql.prepare("INSERT INTO snak(property,dvalue,vtype) VALUES (?,?,'quantity')");
-        cppdb::statement sql_add_stmt=sql.prepare("INSERT INTO statement(subject,mainsnak) VALUES (?,?)");
+        sql.begin();
+        Persistence p(sql, true);
 
         int64_t count = 0;
-        Parser::parseTSV(in, [&sql, &count](Statement st)  {
-
+        Parser::parseTSV(in, [&sql, &p, &count](Statement st)  {
+            p.addStatement(st);
             count++;
+
+            // batch commit
+            if(count % 100000 == 0) {
+                sql.commit();
+                sql.begin();
+            }
         });
+        sql.commit();
 
         clock_t end = std::clock();
         std::cout << "injection time (" << count << " statements): "

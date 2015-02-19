@@ -11,7 +11,7 @@
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 enum ApprovalState {
-    APPROVED, UNAPPROVED, OTHERSOURCE, WRONG, SKIPPED
+    UNAPPROVED, APPROVED, OTHERSOURCE, WRONG, SKIPPED
 };
 
 enum ValueType {
@@ -54,7 +54,7 @@ public:
     * Initialise a value of type TIME using the time structure and precision
     * given as argument.
     */
-    explicit Value(struct tm t, int precision) : time(t), precision(precision), type(TIME) { }
+    explicit Value(std::tm t, int precision) : time(t), precision(precision), type(TIME) { }
 
     /**
     * Initialise a value if type LOCATION using the latitude and longitude
@@ -84,7 +84,7 @@ public:
     * Return the time value contained in this object. Only applicable to
     * values of type TIME.
     */
-    const tm &getTime() const {
+    const std::tm &getTime() const {
         return time;
     }
 
@@ -128,7 +128,7 @@ public:
 
 private:
     std::string str, lang;
-    struct tm   time;
+    std::tm     time;
     location_t  loc;
     decimal_t   quantity;
     int         precision;

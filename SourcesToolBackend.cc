@@ -3,7 +3,7 @@
 
 #include "SourcesToolBackend.h"
 
-#include <fstream>
+#include <sstream>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -14,29 +14,36 @@
 
 #include "Parser.h"
 
-void SourcesToolBackend::init() {
-
-    std::ifstream file(db_path, std::ios_base::in | std::ios_base::binary);
-
-    if(file.fail()) {
-        std::cerr << "could not open data file" << std::endl;
-        return;
+std::string build_connection(
+        const std::string& db_driver, const std::string& db_name,
+        const std::string& db_host, const std::string& db_port,
+        const std::string& db_user, const std::string& db_pass
+) {
+    std::ostringstream out;
+    out << db_driver << ":database=" << db_name;
+    if (db_host != "") {
+        out << ";host=" << db_host;
     }
+    if (db_port != "") {
+        out << ";port=" << db_port;
+    }
+    if (db_user != "") {
+        out << ";user=" << db_user;
+    }
+    if (db_pass != "") {
+        out << ";pass=" << db_pass;
+    }
+    return out.str();
+}
 
-    boost::iostreams::filtering_istreambuf zin;
-    zin.push(boost::iostreams::gzip_decompressor());
-    zin.push(file);
 
-    std::istream in(&zin);
+SourcesToolBackend::SourcesToolBackend(
+        const std::string &db_driver, const std::string &db_name,
+        const std::string &db_host, const std::string &db_port,
+        const std::string &db_user, const std::string &db_pass) {
 
-    Parser::parseTSV(in, [this](Statement st){
-        statements[st.getQID()]; // make sure vector is initialised
-        statements[st.getQID()].push_back(st);
-    });
-
-
-    initialised = true;
-
+    connpool = cppdb::pool::create(build_connection(
+            db_driver, db_name, db_host, db_port, db_user, db_pass));
 }
 
 std::vector<Statement> SourcesToolBackend::getStatementsByQID(std::string & qid, bool approved){

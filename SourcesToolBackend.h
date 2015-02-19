@@ -5,26 +5,37 @@
 #define HAVE_SOURCESTOOL_BACKEND_H_
 
 #include "Statement.h"
+#include "SourcesToolBackend.cc"
 
 #include <vector>
 #include <map>
 #include <string>
 
+#include <cppdb/pool.h>
+
+std::string build_connection(
+        const std::string& db_driver, const std::string& db_name,
+        const std::string& db_host, const std::string& db_port,
+        const std::string& db_user, const std::string& db_pass
+);
+
 class SourcesToolBackend {
 public:
-    explicit SourcesToolBackend(const std::string& db_path)
-            : db_path(db_path), initialised(false) {}
+    SourcesToolBackend(
+            const std::string& db_driver, const std::string& db_name,
+            const std::string& db_host, const std::string& db_port,
+            const std::string& db_user, const std::string& db_pass
+    );
 
     std::vector<Statement> getStatementsByQID(std::string &qid, bool approved);
 
     std::vector<Statement> getStatementsByTopic(std::string &topic, int count);
 
 private:
-    void init();
 
-    std::map<std::string,std::vector<Statement>> statements;
-    std::string db_path;
-    bool initialised;
+    // CppDB SQL connection pool
+    cppdb::pool::pointer connpool;
+
 };
 
 
