@@ -34,7 +34,7 @@ PropertyValue parsePropertyValue(std::string property, std::string value) {
     } else if(boost::regex_match(value, sm, re_loc)) {
         return PropertyValue(
                 property,
-                Value(std::make_pair(std::stod(sm.str(1)), std::stod(sm.str(2)))));
+                Value(std::stod(sm.str(1)), std::stod(sm.str(2))));
     } else if(boost::regex_match(value, sm, re_text)) {
         return PropertyValue(property, Value(sm.str(2), sm.str(1)));
     } else if(boost::regex_match(value, sm, re_time)) {

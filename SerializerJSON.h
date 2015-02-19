@@ -15,6 +15,11 @@
 
 namespace Serializer {
 
+    /**
+    * Create a Wikidata JSON 'snak', representing a property/value pair with
+    * metadata. Takes as argument an internal PropertyValue structure and
+    * returns a CppCMS JSON value for further use.
+    */
     cppcms::json::value createWikidataSnak(const PropertyValue& pv) {
         const Value& v = pv.getValue();
 

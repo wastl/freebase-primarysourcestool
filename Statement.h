@@ -26,43 +26,102 @@ typedef boost::multiprecision::cpp_dec_float_50 decimal_t;
 // define locations as pairs of doubles
 typedef std::pair<double,double> location_t;
 
-// define values as either string, time, location or quantity
+/**
+* Representation of a Wikidata value. Wikidata values can be of several
+* different types (see ValueType). This class serves as a container for
+* all of them; in case they are not used they are left default initialized.
+*
+* The problem could potentially be solved more cleanly using inheritance,
+* at the cost of having to introduce pointers and still needing to
+* runtime-test for the different value types, so the merged solution is
+* simpler.
+*/
 class Value {
 public:
-    Value(std::string s) : str(s), type(ITEM) { }
-    Value(std::string s, std::string lang) : str(s), lang(lang), type(STRING) { }
-    Value(struct tm t, int precision) : time(t), precision(precision), type(TIME) { }
-    Value(location_t l) : loc(l), type(LOCATION) { }
-    Value(decimal_t d) : quantity(d), type(QUANTITY) { }
+    /**
+    * Initialise a value of type ITEM using the QID passed as argument.
+    */
+    explicit Value(std::string qid) : str(qid), type(ITEM) { }
+
+    /**
+    * Initialise a value of type STRING using the text and language
+    * passed as argument. Strings without language use empty string as
+    * language.
+    */
+    explicit Value(std::string s, std::string lang) : str(s), lang(lang), type(STRING) { }
+
+    /**
+    * Initialise a value of type TIME using the time structure and precision
+    * given as argument.
+    */
+    explicit Value(struct tm t, int precision) : time(t), precision(precision), type(TIME) { }
+
+    /**
+    * Initialise a value if type LOCATION using the latitude and longitude
+    * given as argument.
+    */
+    explicit Value(double lat, double lng) : loc(std::make_pair(lat,lng)), type(LOCATION) { }
+
+    /**
+    * Initialise a value of type QUANTITY using the multiprecision decimal
+    * number given as argument.
+    */
+    explicit Value(decimal_t d) : quantity(d), type(QUANTITY) { }
 
     // default copy constructor and assignment operator
     Value(const Value& other) = default;
     Value& operator=(const Value& other) = default;
 
+    /**
+    * Return the string value contained in this object. Only applicable to
+    * values of type ITEM or STRING.
+    */
     const std::string &getString() const {
         return str;
     }
 
+    /**
+    * Return the time value contained in this object. Only applicable to
+    * values of type TIME.
+    */
     const tm &getTime() const {
         return time;
     }
 
+    /**
+    * Return the time precision contained in this object. Only applicable to
+    * values of type TIME.
+    */
     int getPrecision() const {
         return precision;
     }
 
+    /**
+    * Return the latitude/longitude pair contained in this object. Only
+    * applicable to values of type LOCATION.
+    */
     const location_t &getLocation() const {
         return loc;
     }
 
+    /**
+    * Return the decimal value contained in this object. Only
+    * applicable to values of type QUANTITY.
+    */
     const decimal_t &getQuantity() const {
         return quantity;
     }
 
+    /**
+    * Return the language of this value.
+    */
     const std::string &getLanguage() const {
         return lang;
     }
 
+    /**
+    * Return the type of this value.
+    */
     const ValueType &getType() const {
         return type;
     }
