@@ -11,7 +11,7 @@
 #include <cppcms/url_dispatcher.h>
 #include <cppcms/url_mapper.h>
 
-#include "Serializer.h"
+#include "SerializerTSV.h"
 #include "Statement.h"
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
@@ -43,10 +43,14 @@ void SourcesToolService::getEntityByQID(std::string qid) {
     std::vector<Statement> statements = backend.getStatementsByQID(qid, false);
 
     if (statements.size() > 0) {
-        response().content_type("application/json");
+        if(request().http_accept() == "text/wikidata+tsv") {
+            response().content_type("text/wikidata+tsv");
 
-        Serializer::write("application/json",
-                statements.cbegin(), statements.cend(), response().out());
+            Serializer::writeTSV(statements.cbegin(), statements.cend(), response().out());
+        } else {
+            response().status(406, "cannot serialize to "+ request().http_accept());
+        }
+
     } else {
         response().status(404, "no statements found for entity "+qid);
     }

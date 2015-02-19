@@ -15,10 +15,12 @@ ADD_DEFINITIONS(
 
 find_package (Threads)
 find_package (CPPCMS REQUIRED)
-find_package (Boost 1.55.0 REQUIRED COMPONENTS iostreams)
+find_package (Boost 1.55.0 REQUIRED COMPONENTS iostreams regex)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_executable(freebase_backend main.cc SourcesToolService.cc SourcesToolBackend.cc)
+add_executable(freebase_inject inject.cc Parser.cc)
+add_executable(freebase_backend main.cc SourcesToolService.cc SourcesToolBackend.cc Parser.cc)
 
 target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} ${Boost_LIBRARIES})
+target_link_libraries(freebase_inject ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})

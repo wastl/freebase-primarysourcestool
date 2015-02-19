@@ -4,13 +4,11 @@
 #ifndef HAVE_STATEMENT_H_
 #define HAVE_STATEMENT_H_
 
+#include <ctime>
 #include <string>
 #include <vector>
 
 #include <boost/multiprecision/cpp_dec_float.hpp>
-
-#include "Qualifier.h"
-#include "Value.h"
 
 enum ApprovalState {
     APPROVED, UNAPPROVED, OTHERSOURCE, WRONG, SKIPPED
@@ -29,16 +27,54 @@ typedef boost::multiprecision::cpp_dec_float_50 decimal_t;
 typedef std::pair<double,double> location_t;
 
 // define values as either string, time, location or quantity
-union Value {
-    std::string str;
-    time_t      time;
+class Value {
+public:
+    Value(std::string s) : str(s), type(ITEM) { }
+    Value(std::string s, std::string lang) : str(s), lang(lang), type(STRING) { }
+    Value(struct tm t, int precision) : time(t), precision(precision), type(TIME) { }
+    Value(location_t l) : loc(l), type(LOCATION) { }
+    Value(decimal_t d) : quantity(d), type(QUANTITY) { }
+
+    // default copy constructor and assignment operator
+    Value(const Value& other) = default;
+    Value& operator=(const Value& other) = default;
+
+    const std::string &getString() const {
+        return str;
+    }
+
+    const tm &getTime() const {
+        return time;
+    }
+
+    int getPrecision() const {
+        return precision;
+    }
+
+    const location_t &getLocation() const {
+        return loc;
+    }
+
+    const decimal_t &getQuantity() const {
+        return quantity;
+    }
+
+    const std::string &getLanguage() const {
+        return lang;
+    }
+
+    const ValueType &getType() const {
+        return type;
+    }
+
+private:
+    std::string str, lang;
+    struct tm   time;
     location_t  loc;
     decimal_t   quantity;
+    int         precision;
 
-    Value(std::string s) : str(s) { }
-    Value(time_t t) : time(t) { }
-    Value(location_t l) : loc(l) { }
-    Value(decimal_t d) : quantity(d) { }
+    ValueType   type;
 };
 
 
@@ -55,10 +91,8 @@ class PropertyValue {
 public:
 
 
-    PropertyValue(std::string property, std::string value,
-                  std::string lang, value_t type)
-            : property(property), value(value), language(lang), type(type) {
-    }
+    PropertyValue(std::string property, Value value)
+            : property(property), value(value) {  }
 
     // default copy constructor and assignment operator
     PropertyValue(const PropertyValue& other) = default;
@@ -73,20 +107,11 @@ public:
         return value;
     }
 
-    const std::string &getLanguage() const {
-        return language;
-    }
-
-    const ValueType &getType() const {
-        return type;
-    }
 
 private:
-    std::string property, language;
+    std::string property;
 
     Value value;
-
-    ValueType type;
 
 };
 
@@ -97,10 +122,8 @@ private:
 * identify the statement, and the current state of approval.
 */
 class Statement {
-
-typedef std::vector<PropertyValue> extensions_t;
-
  public:
+    typedef std::vector<PropertyValue> extensions_t;
 
 
     // main constructor; will be called usually in a parser or with database results
@@ -136,7 +159,7 @@ typedef std::vector<PropertyValue> extensions_t;
     }
 
 
-    const std::string &getValue() const {
+    const Value &getValue() const {
         return propertyValue.getValue();
     }
 

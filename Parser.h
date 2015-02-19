@@ -5,8 +5,10 @@
 
 #include "Statement.h"
 
+namespace Parser {
 
-void parseTSV(std::istream &in, std::function<void(Statement)> handler);
+    void parseTSV(std::istream &in, std::function<void(Statement)> handler);
 
+}  // namespace Parser
 
 #endif

@@ -7,12 +7,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <algorithm>    // copy
 
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
-#include <boost/tokenizer.hpp>
+
+#include "Parser.h"
 
 void SourcesToolBackend::init() {
 
@@ -29,27 +29,11 @@ void SourcesToolBackend::init() {
 
     std::istream in(&zin);
 
+    Parser::parseTSV(in, [this](Statement st){
+        statements[st.getQID()]; // make sure vector is initialised
+        statements[st.getQID()].push_back(st);
+    });
 
-    typedef boost::tokenizer< boost::char_separator<char> > Tokenizer;
-    boost::char_separator<char> sep(" \t");
-
-    std::vector< std::string > vec;
-    std::string line;
-
-    long id = 0;
-    while (getline(in,line))
-    {
-        Tokenizer tok(line, sep);
-        vec.assign(tok.begin(),tok.end());
-
-        std::vector<Qualifier> qualifiers; // TODO
-
-        Statement stmt(id++,vec[0], vec[1], Value(vec[2]), qualifiers);
-        statements[vec[0]];
-        statements[vec[0]].push_back(stmt);
-    }
-
-    std::cout << "scanned " << id << " lines " << std::endl;
 
     initialised = true;
 
