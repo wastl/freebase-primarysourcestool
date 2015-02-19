@@ -13,7 +13,8 @@ CREATE TABLE snak (
 CREATE TABLE statement (
     id       INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     subject  VARCHAR(32),
-    mainsnak INTEGER REFERENCES snak(id)
+    mainsnak INTEGER REFERENCES snak(id),
+    state    VARCHAR(16) DEFAULT 'unapproved'
 );
 
 CREATE TABLE qualifier (
