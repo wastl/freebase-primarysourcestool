@@ -16,12 +16,18 @@ ADD_DEFINITIONS(
 
 find_package (Threads)
 find_package (CPPCMS REQUIRED)
+find_package (CPPDB REQUIRED)
 find_package (Boost 1.55.0 REQUIRED COMPONENTS iostreams regex)
+
+FIND_LIBRARY(CPPDB_POSTGRES_BACKEND NAMES cppdb_postgresql)
+FIND_LIBRARY(CPPDB_MYSQL_BACKEND NAMES cppdb_mysql)
+FIND_LIBRARY(CPPDB_SQLITE_BACKEND NAMES cppdb_sqlite3)
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_executable(freebase_inject inject.cc Parser.cc)
 add_executable(freebase_backend main.cc SourcesToolService.cc SourcesToolBackend.cc Parser.cc)
 
-target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} ${Boost_LIBRARIES})
-target_link_libraries(freebase_inject ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} ${LIBCPPDB_LIBRARY} ${CPPDB_SQLITE_BACKEND} ${Boost_LIBRARIES})
+target_link_libraries(freebase_inject ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPDB_LIBRARY} ${CPPDB_SQLITE_BACKEND} ${Boost_LIBRARIES})
