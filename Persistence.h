@@ -2,10 +2,21 @@
 #define HAVE_PERSISTENCE_H_
 
 #include <cppdb/frontend.h>
-#include <elf.h>
-#include <fcntl.h>
+#include <exception>
 
 #include "Statement.h"
+
+
+class PersistenceException : public std::exception {
+public:
+
+    PersistenceException(const std::string &message) : message(message) { }
+
+    virtual const char *what() const noexcept override;
+
+private:
+    std::string message;
+};
 
 /**
 * Abstraction class for database persistence. Offers low-level methods for
@@ -49,18 +60,21 @@ public:
     /**
     * Return a list of all statements with the given QID as subject.
     */
-    std::vector<Statement> getStatementsByQID(const std::string& qid);
+    std::vector<Statement> getStatementsByQID(
+            const std::string& qid, bool unapprovedOnly);
 
     /**
     * Return a list of count random statements. Selection is up to the backend.
     */
-    std::vector<Statement> getStatementsRandom(int count);
+    std::vector<Statement> getStatementsRandom(
+            int count, bool unapprovedOnly);
 
     /**
     * Return a list of count random statements concerned with the topic given
     * as string.
     */
-    std::vector<Statement> getStatementsByTopic(std::string &topic, int count);
+    std::vector<Statement> getStatementsByTopic(
+            std::string &topic, int count, bool unapprovedOnly);
 
 
 private:

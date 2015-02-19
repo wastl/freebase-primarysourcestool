@@ -15,7 +15,7 @@
 #include "SerializerJSON.h"
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
-        : cppcms::application(srv), backend(settings()["datafile"].str()) {
+        : cppcms::application(srv), backend(settings()["database"]) {
     // map GET and POST requests to /entities/<QID> to the respective handlers
     // we use a helper function to distinguish both cases, since cppcms
     // currently does not really support REST

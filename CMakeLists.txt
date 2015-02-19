@@ -27,7 +27,7 @@ FIND_LIBRARY(CPPDB_SQLITE_BACKEND NAMES cppdb_sqlite3)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_executable(freebase_inject inject.cc Parser.cc Persistence.cc)
-add_executable(freebase_backend main.cc SourcesToolService.cc SourcesToolBackend.cc Parser.cc Persistence.cc)
+add_executable(freebase_backend main.cc SourcesToolService.cc SourcesToolBackend.cc Persistence.cc)
 
 target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARY} ${LIBCPPDB_LIBRARY} ${CPPDB_SQLITE_BACKEND} ${Boost_LIBRARIES})
 target_link_libraries(freebase_inject ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPDB_LIBRARY} ${CPPDB_SQLITE_BACKEND} ${Boost_LIBRARIES})
