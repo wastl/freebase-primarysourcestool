@@ -9,6 +9,7 @@ include_directories("${CMAKE_INSTALL_PREFIX}/include")
 
 ADD_DEFINITIONS(
     -std=c++11 # Or -std=c++0x
+    -g
     # Other flags
     -DBOOST_LOG_DYN_LINK
 )

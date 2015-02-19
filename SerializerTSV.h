@@ -55,6 +55,7 @@ namespace Serializer {
 
         for(; begin != end; ++begin) {
             const Statement& stmt = *begin;
+
             out << stmt.getQID() << "\t"
                 << stmt.getProperty() << "\t";
             writeValueTSV(stmt.getValue(), out);

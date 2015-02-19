@@ -12,7 +12,7 @@
 #include <cppcms/url_mapper.h>
 
 #include "SerializerTSV.h"
-#include "Statement.h"
+#include "SerializerJSON.h"
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
         : cppcms::application(srv), backend(settings()["datafile"].str()) {
@@ -47,6 +47,10 @@ void SourcesToolService::getEntityByQID(std::string qid) {
             response().content_type("text/wikidata+tsv");
 
             Serializer::writeTSV(statements.cbegin(), statements.cend(), response().out());
+        } else if(request().http_accept() == "application/wikidata+json") {
+            response().content_type("application/wikidata+json");
+
+            Serializer::writeWikidataJSON(statements.cbegin(), statements.cend(), response().out());
         } else {
             response().status(406, "cannot serialize to "+ request().http_accept());
         }

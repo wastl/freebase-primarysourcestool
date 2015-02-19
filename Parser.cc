@@ -38,7 +38,6 @@ PropertyValue parsePropertyValue(std::string property, std::string value) {
     } else if(boost::regex_match(value, sm, re_text)) {
         return PropertyValue(property, Value(sm.str(2), sm.str(1)));
     } else if(boost::regex_match(value, sm, re_time)) {
-        std::cout << "Precision: " << std::stoi(sm.str(7)) << std::endl;
         struct tm time = {
                 // sec, min, hour
                 std::stoi(sm[6]), std::stoi(sm[5]), std::stoi(sm[4]),
