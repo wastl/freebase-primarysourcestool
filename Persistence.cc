@@ -228,7 +228,8 @@ std::vector<Statement> Persistence::getRandomStatements(int count, bool unapprov
     cppdb::result res =(
             sql << "SELECT id, subject, mainsnak, state "
                     "FROM statement WHERE (state = 0 OR ?) "
-                    "ORDER BY random() LIMIT ?"
+                    "AND id >= abs(random()) % (SELECT max(id) FROM statement) "
+                    "ORDER BY id LIMIT ?"
                     << !unapprovedOnly << count);
 
 
@@ -251,8 +252,9 @@ std::string Persistence::getRandomQID(bool unapprovedOnly) {
     cppdb::result res =(
             sql << "SELECT subject "
                     "FROM statement WHERE (state = 0 OR ?) "
-                    "GROUP BY subject "
-                    "ORDER BY random() LIMIT 1"
+                    "AND id >= abs(random()) % (SELECT max(id) FROM statement) "
+                    "ORDER BY id "
+                    "LIMIT 1"
                     << !unapprovedOnly << cppdb::row);
 
 
