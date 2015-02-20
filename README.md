@@ -40,6 +40,17 @@ The following HTTP request retrieves a single Wikidata statement by its internal
 
 The statement can be returned in any of the content negotiation formats (see below).
 
+
+## Get Random Statements
+
+The following HTTP request retrieves a random list of non-approved statements. The
+selection procedure is left to the backend.
+
+    GET /statements/any
+
+The statement can be returned in any of the content negotiation formats (see below).
+
+
 ## Mark Statement as Approved (Wrong, Othersource)
 
 The following HTTP request marks a statement identified by a Wikidata QID as approved:
