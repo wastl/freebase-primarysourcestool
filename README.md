@@ -6,7 +6,8 @@ The following HTTP request retrieves an entity by Wikidata QID:
 
     GET /entities/<QID>
       
-The service is modeled after the Wikidata REST API, but currently only supports retrieving data in JSON format.
+The service is modeled after the Wikidata REST API, and supports retrieving data in JSON and TSV format
+(see content negotiation below).
     
 Status Codes:
 
@@ -82,6 +83,22 @@ The sources tool uses cmake for building the server. Please use the following co
     $ mkdir build && cd build
     $ cmake ..
     $ make
+    
+## Initialise and Fill Database
+    
+The current development version of the backend uses sqlite3 as database engine. 
+Initialise the database schema by running
+    
+    $ sqlite3 fb.db < schema.sqlite.sql
+    
+The database file name can be configured in config.json for the backend. The 
+injection tool currently only supports fb.db, though (but you can rename after 
+import). After initialising the database, import data from gzipped TSV files
+as follows:
+
+    $ ./freebase_inject FILE.tsv.gz
+
+Import speed will typically be around 80k-100k statements/sec.    
     
 ## Start Server
     
