@@ -117,6 +117,14 @@ namespace Serializer {
             result[count]["statement"] = sout.str();
             result[count]["id"] = stmt.getID();
             result[count]["format"] = "v1";
+
+            switch (stmt.getApprovalState()) {
+                case UNAPPROVED: result[count]["state"] = "unapproved"; break;
+                case APPROVED: result[count]["state"] = "approved"; break;
+                case WRONG: result[count]["state"] = "wrong"; break;
+                case OTHERSOURCE: result[count]["state"] = "othersource"; break;
+                case SKIPPED: result[count]["state"] = "skipped"; break;
+            }
         }
         result.save(out, cppcms::json::readable);
     }

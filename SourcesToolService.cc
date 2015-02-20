@@ -46,7 +46,7 @@ void SourcesToolService::handleGetPostStatement(std::string stid) {
 void SourcesToolService::getEntityByQID(std::string qid) {
     clock_t begin = std::clock();
 
-    std::vector<Statement> statements = backend.getStatementsByQID(qid, false);
+    std::vector<Statement> statements = backend.getStatementsByQID(qid, true);
 
     if (statements.size() > 0) {
         serializeStatements(statements);
@@ -105,6 +105,8 @@ void SourcesToolService::approveStatement(int64_t stid) {
         state = WRONG;
     } else if(request().get("state") == "othersource") {
         state = OTHERSOURCE;
+    } else if(request().get("state") == "unapproved") {
+        state = UNAPPROVED;
     } else {
         response().status(400, "Bad Request: invalid or missing state parameter");
         return;
