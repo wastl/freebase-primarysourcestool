@@ -72,9 +72,11 @@ can be selected by setting appropriate `Accept:` headers:
  
 # Building and Installation
 
-The REST application is implemented in C++ using the [CppCMS](http://cppcms.com/) framework. Building the
-application requires that you first download and install both frameworks and their dependencies (follow 
-instructions on CppCMS webpage).
+The REST application is implemented in C++ using the [CppCMS](http://cppcms.com/) 
+framework and its [CppDB](http://cppcms.com/sql/cppdb/) companion. Building the
+application requires that you first download and install both frameworks and 
+their dependencies (follow instructions on CppCMS webpage). In particular,
+you need to install sqlite3 with development headers.
 
 ## Build from Source
 
