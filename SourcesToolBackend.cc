@@ -11,6 +11,8 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
+#include <elf.h>
+#include <fcntl.h>
 
 #include "Persistence.h"
 
@@ -64,4 +66,20 @@ std::vector<Statement> SourcesToolBackend::getStatementsByTopic(std::string &top
     std::vector<Statement> stmts;
 
     return stmts;
+}
+
+Statement SourcesToolBackend::getStatementByID(int64_t id) {
+    cppdb::session sql(connstr); // released when sql is destroyed
+
+    Persistence p(sql);
+    return p.getStatement(id);
+}
+
+void SourcesToolBackend::updateStatement(int64_t id, ApprovalState state, std::string user) {
+    cppdb::session sql(connstr); // released when sql is destroyed
+
+    Persistence p(sql);
+    p.updateStatement(id, state);
+
+    // TODO: add user information about approval
 }

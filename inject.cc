@@ -46,6 +46,9 @@ int main(int argc, char **argv) {
             // batch commit
             if(count % 100000 == 0) {
                 sql.commit();
+
+                std::cout << "processed " << count << " statements ..." << std::endl;
+
                 sql.begin();
             }
         });

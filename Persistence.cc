@@ -149,8 +149,17 @@ void Persistence::updateStatement(int64_t id, ApprovalState state) {
     if (!managedTransactions)
         sql.begin();
 
+    int _state = 0;
+    switch (state) {
+        case UNAPPROVED:  _state = 0; break;
+        case APPROVED:    _state = 1; break;
+        case OTHERSOURCE: _state = 2; break;
+        case WRONG:       _state = 3; break;
+        case SKIPPED:     _state = 4; break;
+    }
+
     sql << "UPDATE statement SET state = ? WHERE id = ?"
-        << state << id << cppdb::exec;
+        << _state << id << cppdb::exec;
 
     if (!managedTransactions)
         sql.commit();
@@ -162,10 +171,10 @@ Statement Persistence::getStatement(int64_t id) {
 
     cppdb::result res =(
             sql << "SELECT id, subject, mainsnak, state "
-                    "FROM statement WHERE id = ?"
+                   "FROM statement WHERE id = ?"
                     << id << cppdb::row);
 
-    if (res.next()) {
+    if (!res.empty()) {
         Statement result = buildStatement(sql,
                 res.get<int64_t>("id"), res.get<std::string>("subject"),
                 res.get<int64_t>("mainsnak"), res.get<int16_t>("state"));
@@ -175,7 +184,10 @@ Statement Persistence::getStatement(int64_t id) {
 
         return result;
     } else {
-        throw PersistenceException("statement  not found");
+        if (!managedTransactions)
+            sql.commit();
+
+        throw PersistenceException("statement not found");
     }
 
 
