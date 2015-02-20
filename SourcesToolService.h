@@ -46,14 +46,14 @@ public:
    * or application/json).
    *
    * Request:
-   *     GET /entity?topic=<TOPIC>&user=<WikidataUser>
+   *     GET /entity/any?topic=<TOPIC>&user=<WikidataUser>
    *
    * Status Codes:
    *     200: entity found, returned as JSON
    *     404: entity not found
    *     500: server error
    */
-   void getEntityByTopicUser();
+   void getRandomEntity();
 
    /**
    * Return the statement with the given ID and write it to the response.
@@ -86,6 +86,23 @@ public:
    *     500: server error
    */
    void approveStatement(int64_t stid);
+
+   /**
+   * Return a list of randomly selected non-approved statements from
+   * the database and serialize them according to content negotiation
+   * (either text/tsv, application/vnd.wikidata+json or application/json).
+   *
+   * Request:
+   *     GET /statements/any?count=<COUNT>
+   *
+   * The optional "count" request parameter configures how many statements
+   * to return at most (default: 10).
+   *
+   * Status Codes:
+   *     200: request successful and statements returned
+   *     500: server error
+   */
+   void getRandomStatements();
 
 private:
    void handleGetPostStatement(std::string);

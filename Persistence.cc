@@ -219,6 +219,61 @@ std::vector<Statement> Persistence::getStatementsByQID(const std::string &qid, b
 }
 
 
+std::vector<Statement> Persistence::getRandomStatements(int count, bool unapprovedOnly) {
+    if (!managedTransactions)
+        sql.begin();
+
+    std::vector<Statement> result;
+
+    cppdb::result res =(
+            sql << "SELECT id, subject, mainsnak, state "
+                    "FROM statement WHERE (state = 0 OR ?) "
+                    "ORDER BY random() LIMIT ?"
+                    << !unapprovedOnly << count);
+
+
+    while(res.next()) {
+        result.push_back(buildStatement(sql,
+                res.get<int64_t>("id"), res.get<std::string>("subject"),
+                res.get<int64_t>("mainsnak"), res.get<int16_t>("state")));
+    }
+
+    if (!managedTransactions)
+        sql.commit();
+
+    return result;
+}
+
+std::string Persistence::getRandomQID(bool unapprovedOnly) {
+    if (!managedTransactions)
+        sql.begin();
+
+    cppdb::result res =(
+            sql << "SELECT subject "
+                    "FROM statement WHERE (state = 0 OR ?) "
+                    "GROUP BY subject "
+                    "ORDER BY random() LIMIT 1"
+                    << !unapprovedOnly << cppdb::row);
+
+
+    if(!res.empty()) {
+        std::string result = res.get<std::string>("subject");
+
+        if (!managedTransactions)
+            sql.commit();
+
+        return result;
+    } else {
+        if (!managedTransactions)
+            sql.commit();
+
+        throw PersistenceException("no entity found");
+    }
+
+
+}
+
+
 const char *PersistenceException::what() const noexcept {
     return message.c_str();
 }

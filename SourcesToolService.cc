@@ -3,8 +3,6 @@
 
 #include "SourcesToolService.h"
 
-#include <fstream>
-
 #include <cppcms/service.h>
 #include <cppcms/http_response.h>
 #include <cppcms/http_request.h>
@@ -17,22 +15,26 @@
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
         : cppcms::application(srv), backend(settings()["database"]) {
-    // map GET and POST requests to /entities/<QID> to the respective handlers
-    // we use a helper function to distinguish both cases, since cppcms
-    // currently does not really support REST
+
     dispatcher().assign("/entities/(Q\\d+)",
             &SourcesToolService::getEntityByQID, this, 1);
     mapper().assign("entity_by_qid", "/entities/{1}");
 
     // map request to random entity selector
     dispatcher().assign("/entities/any",
-            &SourcesToolService::getEntityByTopicUser, this);
+            &SourcesToolService::getRandomEntity, this);
     mapper().assign("entity_by_topic_user", "/entities/any");
 
+    // map GET and POST requests to /entities/<QID> to the respective handlers
+    // we use a helper function to distinguish both cases, since cppcms
+    // currently does not really support REST
     dispatcher().assign("/statements/(\\d+)",
             &SourcesToolService::handleGetPostStatement, this, 1);
     mapper().assign("stmt_by_id", "/statements/{1}");
 
+    dispatcher().assign("/statements/any",
+            &SourcesToolService::getRandomStatements, this);
+    mapper().assign("stmt_by_random", "/statements/any");
 }
 
 void SourcesToolService::handleGetPostStatement(std::string stid) {
@@ -60,26 +62,18 @@ void SourcesToolService::getEntityByQID(std::string qid) {
             << "ms" << std::endl;
 }
 
-void SourcesToolService::getEntityByTopicUser() {
+void SourcesToolService::getRandomEntity() {
     // currently always return the test QID
 
     clock_t begin = std::clock();
 
-    // currently always return the test QID
-    std::ifstream input(settings()["datafile"].str());
+    std::vector<Statement> statements = backend.getStatementsByRandomQID(true);
 
-    if (input.fail()) {
-        response().status(404,
-                "could not open data file, please specify in config.json");
-        return;
+    if (statements.size() > 0) {
+        serializeStatements(statements);
+    } else {
+        response().status(404, "no random unapproved entity found");
     }
-
-    cppcms::json::value entity;
-
-    input >> entity;
-
-    response().content_type("application/json");
-    entity.save(response().out(), cppcms::json::readable);
 
     clock_t end = std::clock();
     std::cout << "GET /entities/any time: "
@@ -144,6 +138,22 @@ void SourcesToolService::getStatement(int64_t stid) {
             << "ms" << std::endl;
 }
 
+void SourcesToolService::getRandomStatements() {
+    clock_t begin = std::clock();
+
+    int count = 10;
+    if (request().get("count") != "") {
+        count = std::stoi(request().get("count"));
+    }
+
+    serializeStatements(backend.getRandomStatements(count, true));
+
+    clock_t end = std::clock();
+    std::cout << "GET /statements/any time: "
+            << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
+            << "ms" << std::endl;
+}
+
 
 void SourcesToolService::serializeStatements(const std::vector<Statement> &statements) {
     if(request().http_accept() == "text/vnd.wikidata+tsv"
@@ -161,3 +171,4 @@ void SourcesToolService::serializeStatements(const std::vector<Statement> &state
         Serializer::writeEnvelopeJSON(statements.cbegin(), statements.cend(), response().out());
     }
 }
+

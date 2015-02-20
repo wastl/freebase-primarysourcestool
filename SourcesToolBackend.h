@@ -45,9 +45,15 @@ public:
     std::vector<Statement> getStatementsByQID(std::string &qid, bool unapprovedOnly);
 
     /**
-    * Return a list of count random statements relating to a topic.
+    * Return a list of statements for a randomly selected entity ID. If unapprovedOnly
+    * is set, return only statements with state "unapproved".
     */
-    std::vector<Statement> getStatementsByTopic(std::string &topic, int count);
+    std::vector<Statement> getStatementsByRandomQID(bool unapprovedOnly);
+
+    /**
+    * Return a list of count random statements.
+    */
+    std::vector<Statement> getRandomStatements(int count, bool unapprovedOnly);
 
     /**
     * Update the approval state of the statement with the given ID.
