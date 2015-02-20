@@ -43,20 +43,19 @@ void SourcesToolService::getEntityByQID(std::string qid) {
     std::vector<Statement> statements = backend.getStatementsByQID(qid, false);
 
     if (statements.size() > 0) {
-        if(request().http_accept() == "text/wikidata+tsv") {
-            response().content_type("text/wikidata+tsv");
+        if(request().http_accept() == "text/vnd.wikidata+tsv"
+                || request().http_accept() == "text/tsv") {
+            response().content_type("text/vnd.wikidata+tsv");
 
             Serializer::writeTSV(statements.cbegin(), statements.cend(), response().out());
         } else if(request().http_accept() == "application/wikidata+json") {
-            response().content_type("application/wikidata+json");
+            response().content_type("application/vnd.wikidata+json");
 
             Serializer::writeWikidataJSON(statements.cbegin(), statements.cend(), response().out());
-        } else if(request().http_accept() == "application/envelope+json") {
-            response().content_type("application/envelope+json");
+        } else {
+            response().content_type("application/vnd.wikidata.envelope+json");
 
             Serializer::writeEnvelopeJSON(statements.cbegin(), statements.cend(), response().out());
-        } else {
-            response().status(406, "cannot serialize to "+ request().http_accept());
         }
 
     } else {

@@ -30,21 +30,44 @@ Status Codes:
   * 404: entity not found
   * 500: server error
 
-## Mark Entity as Approved
 
-The following HTTP request marks an entity identified by a Wikidata QID as approved:
+## Get Statement by Database ID
 
-    POST /entities/<QID>?approved=true&user=<WikidataUser>
+The following HTTP request retrieves a single Wikidata statement by its internal database ID:
+
+    GET /statements/<ID>
+
+The statement can be returned in any of the content negotiation formats (see below).
+
+## Mark Statement as Approved (Wrong, Othersource)
+
+The following HTTP request marks a statement identified by a Wikidata QID as approved:
+
+    POST /statements/<ID>?state=<STATE>&user=<WikidataUser>
     
-The WikidataUser passed as argument is used for tracking purposes only and stored in the database together with
+where <STATE> can be one of "approved", "wrong", or "othersource". The WikidataUser passed as 
+argument is used for tracking purposes only and stored in the database together with
 the approval flag.
    
 Status Codes:
 
-  * 200: entity found and marked as approved by user <WikidataUser>
-  * 409: entity found but was already marked as approved by another user
+  * 200: statement found and marked as approved by user <WikidataUser>
+  * 404: statement not found
+  * 409: statement found but was already marked as approved by another user
   * 500: server error
   
+  
+## Content Negotiation
+  
+GET requests to the backend webservices currently support 3 different serialization formats that
+can be selected by setting appropriate `Accept:` headers:
+ 
+  * [Wikidata Tab Separated](http://tools.wmflabs.org/wikidata-todo/quick_statements.php) using header
+    `text/vnd.wikidata+tsv`
+  * [Wikidata JSON](https://www.mediawiki.org/wiki/Wikibase/Notes/JSON) using header
+    `application/vnd.wikidata+json`
+  * Envelope JSON, wrapping Wikidata TSV in a JSON envelope containing the database ID and version
+    information; this is the default format.
  
 # Building and Installation
 
