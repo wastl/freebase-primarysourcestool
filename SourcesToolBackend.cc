@@ -5,12 +5,6 @@
 
 #include <sstream>
 #include <iostream>
-#include <vector>
-#include <string>
-
-#include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
 
 #include "Persistence.h"
 
@@ -60,8 +54,34 @@ std::vector<Statement> SourcesToolBackend::getStatementsByQID(
 
 }
 
-std::vector<Statement> SourcesToolBackend::getStatementsByTopic(std::string &topic, int count) {
-    std::vector<Statement> stmts;
+std::vector<Statement> SourcesToolBackend::getRandomStatements(int count, bool unapprovedOnly) {
+    cppdb::session sql(connstr); // released when sql is destroyed
 
-    return stmts;
+    Persistence p(sql);
+    return p.getRandomStatements(count, unapprovedOnly);
+}
+
+Statement SourcesToolBackend::getStatementByID(int64_t id) {
+    cppdb::session sql(connstr); // released when sql is destroyed
+
+    Persistence p(sql);
+    return p.getStatement(id);
+}
+
+void SourcesToolBackend::updateStatement(int64_t id, ApprovalState state, std::string user) {
+    cppdb::session sql(connstr); // released when sql is destroyed
+
+    Persistence p(sql);
+    p.updateStatement(id, state);
+
+    // TODO: add user information about approval
+}
+
+std::vector<Statement> SourcesToolBackend::getStatementsByRandomQID(bool unapprovedOnly) {
+    cppdb::session sql(connstr); // released when sql is destroyed
+
+    Persistence p(sql);
+    std::string qid = p.getRandomQID(unapprovedOnly);
+
+    return p.getStatementsByQID(qid, unapprovedOnly);
 }

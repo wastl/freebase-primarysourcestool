@@ -6,7 +6,8 @@ The following HTTP request retrieves an entity by Wikidata QID:
 
     GET /entities/<QID>
       
-The service is modeled after the Wikidata REST API, but currently only supports retrieving data in JSON format.
+The service is modeled after the Wikidata REST API, and supports retrieving data in JSON and TSV format
+(see content negotiation below).
     
 Status Codes:
 
@@ -30,27 +31,63 @@ Status Codes:
   * 404: entity not found
   * 500: server error
 
-## Mark Entity as Approved
 
-The following HTTP request marks an entity identified by a Wikidata QID as approved:
+## Get Statement by Database ID
 
-    POST /entities/<QID>?approved=true&user=<WikidataUser>
+The following HTTP request retrieves a single Wikidata statement by its internal database ID:
+
+    GET /statements/<ID>
+
+The statement can be returned in any of the content negotiation formats (see below).
+
+
+## Get Random Statements
+
+The following HTTP request retrieves a random list of non-approved statements. The
+selection procedure is left to the backend.
+
+    GET /statements/any
+
+The statement can be returned in any of the content negotiation formats (see below).
+
+
+## Mark Statement as Approved (Wrong, Othersource)
+
+The following HTTP request marks a statement identified by a Wikidata QID as approved:
+
+    POST /statements/<ID>?state=<STATE>&user=<WikidataUser>
     
-The WikidataUser passed as argument is used for tracking purposes only and stored in the database together with
+where <STATE> can be one of "approved", "wrong", or "othersource". The WikidataUser passed as 
+argument is used for tracking purposes only and stored in the database together with
 the approval flag.
    
 Status Codes:
 
-  * 200: entity found and marked as approved by user <WikidataUser>
-  * 409: entity found but was already marked as approved by another user
+  * 200: statement found and marked as approved by user <WikidataUser>
+  * 404: statement not found
+  * 409: statement found but was already marked as approved by another user
   * 500: server error
   
+  
+## Content Negotiation
+  
+GET requests to the backend webservices currently support 3 different serialization formats that
+can be selected by setting appropriate `Accept:` headers:
+ 
+  * [Wikidata Tab Separated](http://tools.wmflabs.org/wikidata-todo/quick_statements.php) using header
+    `text/vnd.wikidata+tsv`
+  * [Wikidata JSON](https://www.mediawiki.org/wiki/Wikibase/Notes/JSON) using header
+    `application/vnd.wikidata+json`
+  * Envelope JSON, wrapping Wikidata TSV in a JSON envelope containing the database ID and version
+    information; this is the default format.
  
 # Building and Installation
 
-The REST application is implemented in C++ using the [CppCMS](http://cppcms.com/) framework. Building the
-application requires that you first download and install both frameworks and their dependencies (follow 
-instructions on CppCMS webpage).
+The REST application is implemented in C++ using the [CppCMS](http://cppcms.com/) 
+framework and its [CppDB](http://cppcms.com/sql/cppdb/) companion. Building the
+application requires that you first download and install both frameworks and 
+their dependencies (follow instructions on CppCMS webpage). In particular,
+you need to install sqlite3 with development headers.
 
 ## Build from Source
 
@@ -59,6 +96,22 @@ The sources tool uses cmake for building the server. Please use the following co
     $ mkdir build && cd build
     $ cmake ..
     $ make
+    
+## Initialise and Fill Database
+    
+The current development version of the backend uses sqlite3 as database engine. 
+Initialise the database schema by running
+    
+    $ sqlite3 fb.db < schema.sqlite.sql
+    
+The database file name can be configured in config.json for the backend. The 
+injection tool currently only supports fb.db, though (but you can rename after 
+import). After initialising the database, import data from gzipped TSV files
+as follows:
+
+    $ ./freebase_inject FILE.tsv.gz
+
+Import speed will typically be around 80k-100k statements/sec.    
     
 ## Start Server
     

@@ -152,8 +152,17 @@ void Persistence::updateStatement(int64_t id, ApprovalState state) {
     if (!managedTransactions)
         sql.begin();
 
+    int _state = 0;
+    switch (state) {
+        case UNAPPROVED:  _state = 0; break;
+        case APPROVED:    _state = 1; break;
+        case OTHERSOURCE: _state = 2; break;
+        case WRONG:       _state = 3; break;
+        case SKIPPED:     _state = 4; break;
+    }
+
     sql << "UPDATE statement SET state = ? WHERE id = ?"
-        << state << id << cppdb::exec;
+        << _state << id << cppdb::exec;
 
     if (!managedTransactions)
         sql.commit();
@@ -165,10 +174,10 @@ Statement Persistence::getStatement(int64_t id) {
 
     cppdb::result res =(
             sql << "SELECT id, subject, mainsnak, state "
-                    "FROM statement WHERE id = ?"
+                   "FROM statement WHERE id = ?"
                     << id << cppdb::row);
 
-    if (res.next()) {
+    if (!res.empty()) {
         Statement result = buildStatement(sql,
                 res.get<int64_t>("id"), res.get<std::string>("subject"),
                 res.get<int64_t>("mainsnak"), res.get<int16_t>("state"));
@@ -178,7 +187,10 @@ Statement Persistence::getStatement(int64_t id) {
 
         return result;
     } else {
-        throw PersistenceException("statement  not found");
+        if (!managedTransactions)
+            sql.commit();
+
+        throw PersistenceException("statement not found");
     }
 
 
@@ -207,6 +219,63 @@ std::vector<Statement> Persistence::getStatementsByQID(const std::string &qid, b
         sql.commit();
 
     return result;
+}
+
+
+std::vector<Statement> Persistence::getRandomStatements(int count, bool unapprovedOnly) {
+    if (!managedTransactions)
+        sql.begin();
+
+    std::vector<Statement> result;
+
+    cppdb::result res =(
+            sql << "SELECT id, subject, mainsnak, state "
+                    "FROM statement WHERE (state = 0 OR ?) "
+                    "AND id >= abs(random()) % (SELECT max(id) FROM statement) "
+                    "ORDER BY id LIMIT ?"
+                    << !unapprovedOnly << count);
+
+
+    while(res.next()) {
+        result.push_back(buildStatement(sql,
+                res.get<int64_t>("id"), res.get<std::string>("subject"),
+                res.get<int64_t>("mainsnak"), res.get<int16_t>("state")));
+    }
+
+    if (!managedTransactions)
+        sql.commit();
+
+    return result;
+}
+
+std::string Persistence::getRandomQID(bool unapprovedOnly) {
+    if (!managedTransactions)
+        sql.begin();
+
+    cppdb::result res =(
+            sql << "SELECT subject "
+                    "FROM statement WHERE (state = 0 OR ?) "
+                    "AND id >= abs(random()) % (SELECT max(id) FROM statement) "
+                    "ORDER BY id "
+                    "LIMIT 1"
+                    << !unapprovedOnly << cppdb::row);
+
+
+    if(!res.empty()) {
+        std::string result = res.get<std::string>("subject");
+
+        if (!managedTransactions)
+            sql.commit();
+
+        return result;
+    } else {
+        if (!managedTransactions)
+            sql.commit();
+
+        throw PersistenceException("no entity found");
+    }
+
+
 }
 
 

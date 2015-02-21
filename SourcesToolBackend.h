@@ -19,6 +19,10 @@ std::string build_connection(
         const std::string& db_user, const std::string& db_pass
 );
 
+/**
+* Database backend for accessing statements and entities. Manages the
+* SQL connection details and wraps the Persistence implementation.
+*/
 class SourcesToolBackend {
 public:
     SourcesToolBackend(const cppcms::json::value& config);
@@ -29,10 +33,32 @@ public:
             const std::string& db_user, const std::string& db_pass
     );
 
-    std::vector<Statement> getStatementsByQID(
-            std::string &qid, bool unapprovedOnly);
+    /**
+    * Return a statement by ID. Throws PersistenceException if not found.
+    */
+    Statement getStatementByID(int64_t id);
 
-    std::vector<Statement> getStatementsByTopic(std::string &topic, int count);
+    /**
+    * Return a list of statements for the given entity ID. If unapprovedOnly
+    * is set, return only statements with state "unapproved".
+    */
+    std::vector<Statement> getStatementsByQID(std::string &qid, bool unapprovedOnly);
+
+    /**
+    * Return a list of statements for a randomly selected entity ID. If unapprovedOnly
+    * is set, return only statements with state "unapproved".
+    */
+    std::vector<Statement> getStatementsByRandomQID(bool unapprovedOnly);
+
+    /**
+    * Return a list of count random statements.
+    */
+    std::vector<Statement> getRandomStatements(int count, bool unapprovedOnly);
+
+    /**
+    * Update the approval state of the statement with the given ID.
+    */
+    void updateStatement(int64_t id, ApprovalState state, std::string user);
 
 private:
 

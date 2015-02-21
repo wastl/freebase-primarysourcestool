@@ -69,16 +69,34 @@ public:
     /**
     * Return a list of count random statements. Selection is up to the backend.
     */
-    std::vector<Statement> getStatementsRandom(
+    std::vector<Statement> getRandomStatements(
             int count, bool unapprovedOnly);
 
     /**
     * Return a list of count random statements concerned with the topic given
     * as string.
     */
-    std::vector<Statement> getStatementsByTopic(
-            std::string &topic, int count, bool unapprovedOnly);
+//    std::vector<Statement> getRandomStatementsByTopic(
+//            const std::string &topic, int count, bool unapprovedOnly);
 
+
+    /**
+    * Retrieve a random QID from the database. If unapprovedOnly is true,
+    * only return QIDs of entities with at least one unapproved statement.
+    *
+    * Throws PersistenceException in case there are no entities (or no
+    * unapproved entities).
+    */
+    std::string getRandomQID(bool unapprovedOnly);
+
+
+    /**
+    * Retrieve a random QID from the database for entities having a given
+    * topic. If unapprovedOnly is true, only return QIDs of entities with
+    * at least one unapproved statement.
+    */
+//    std::string getRandomQIDByTopic(
+//            const std::string& topic, bool unapprovedOnly);
 
 private:
     // reference to the wrapped sql session

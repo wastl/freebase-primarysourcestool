@@ -29,3 +29,5 @@ CREATE TABLE source (
     stmt     INTEGER REFERENCES statement(id),
     snak     INTEGER REFERENCES snak(id)
 );
+
+CREATE INDEX idx_stmt_qid ON statement(subject);
