@@ -1,3 +1,6 @@
+// Copyright 2015 Google Inc. All Rights Reserved.
+// Author: Sebastian Schaffert <schaffert@google.com>
+
 #include "Persistence.h"
 
 static int64_t addSnak(cppdb::session &sql, const PropertyValue &pv) {
