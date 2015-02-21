@@ -104,14 +104,14 @@ Initialise the database schema by running
     
     $ sqlite3 fb.db < schema.sqlite.sql
     
-The database file name can be configured in config.json for the backend. The 
-injection tool currently only supports fb.db, though (but you can rename after 
-import). After initialising the database, import data from gzipped TSV files
-as follows:
+The database file name can be configured in config.json. After initialising the database, 
+import data from gzipped TSV files as follows:
 
-    $ ./freebase_inject FILE.tsv.gz
+    $ ./freebase_inject -z -c config.json -i FILE.tsv.gz
 
-Import speed will typically be around 80k-100k statements/sec.    
+where config.json is the configuration file and FILE.tsv.gz is the input file. 
+Option `-z` specifies whether the input file is gzip'ed or plain TSV. Import 
+speed will typically be around 80k-100k statements/sec.    
     
 ## Start Server
     

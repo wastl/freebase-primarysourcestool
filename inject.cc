@@ -2,6 +2,7 @@
 // Author: Sebastian Schaffert <schaffert@google.com>
 
 #include <ctime>
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -10,15 +11,76 @@
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <cppdb/frontend.h>
+#include <cppcms/json.h>
 
 #include "Parser.h"
 #include "SerializerTSV.h"
 #include "Persistence.h"
 
+std::string build_connection(const cppcms::json::value& config) {
+    std::ostringstream out;
+    out << config["driver"].str() << ":db=" << config["name"].str();
+    if (config["host"].str() != "") {
+        out << ";host=" << config["host"].str();
+    }
+    if (config["port"].str() != "") {
+        out << ";port=" << config["port"].str();
+    }
+    if (config["user"].str() != "") {
+        out << ";user=" << config["user"].str();
+    }
+    if (config["password"].str() != "") {
+        out << ";pass=" << config["password"].str();
+    }
+    return out.str();
+}
+
+
+void usage(char *cmd) {
+    std::cout << "Usage: " << cmd << " [-z] -c config.json -i datafile" << std::endl;
+    std::cout << "Options:" <<std::endl;
+    std::cout << " -c config.json     backend configuration file to read database configuration" << std::endl;
+    std::cout << " -i datafile        input data file containing statements in TSV format" << std::endl;
+    std::cout << " -z                 input is compressed with GZIP" << std::endl;
+}
+
 int main(int argc, char **argv) {
+    int opt;
+    bool gzipped = false;
+    std::string datafile, configfile;
+
+    // read options from command line
+    while( (opt = getopt(argc,argv,"zc:i:")) != -1) {
+        switch(opt) {
+            case 'c':
+                configfile = optarg;
+                break;
+            case 'i':
+                datafile = optarg;
+                break;
+            case 'z':
+                gzipped = true;
+                break;
+            default:
+                usage(argv[0]);
+                return 1;
+        }
+    }
+
+    if (datafile == "" || configfile == "") {
+        std::cerr << "Options -c and -i are required." << std::endl << std::endl;
+        usage(argv[0]);
+        return 1;
+    }
+
+    // read configuration
+    cppcms::json::value config;
+    std::ifstream cfgfile(configfile);
+    cfgfile >> config;
+
     try {
 
-        std::ifstream file(argv[1], std::ios_base::in | std::ios_base::binary);
+        std::ifstream file(datafile, std::ios_base::in | std::ios_base::binary);
 
         if(file.fail()) {
             std::cerr << "could not open data file" << std::endl;
@@ -26,14 +88,16 @@ int main(int argc, char **argv) {
         }
 
         boost::iostreams::filtering_istreambuf zin;
-        zin.push(boost::iostreams::gzip_decompressor());
+        if (gzipped) {
+            zin.push(boost::iostreams::gzip_decompressor());
+        }
         zin.push(file);
 
         std::istream in(&zin);
 
         clock_t begin = std::clock();
 
-        cppdb::session sql("sqlite3:db=fb.db");
+        cppdb::session sql(build_connection(config["database"]));
 
         sql.begin();
         Persistence p(sql, true);
