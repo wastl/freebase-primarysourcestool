@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include <cppcms/serialization.h>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 enum ApprovalState {
@@ -36,7 +37,7 @@ typedef std::pair<double,double> location_t;
 * runtime-test for the different value types, so the merged solution is
 * simpler.
 */
-class Value {
+class Value : public cppcms::serializable {
 public:
     /**
     * Initialise a value of type ITEM using the QID passed as argument.
@@ -126,7 +127,12 @@ public:
         return type;
     }
 
+
+    virtual void serialize(cppcms::archive &a) override;
+
 private:
+    Value() {}
+
     std::string str, lang;
     std::tm     time;
     location_t  loc;
@@ -134,6 +140,10 @@ private:
     int         precision;
 
     ValueType   type;
+
+    // needed for (de-)serialization
+    friend class PropertyValue;
+    friend class cppcms::archive;
 };
 
 
@@ -144,11 +154,10 @@ private:
 * All value types are represented internally using the string representation
 * described at http://tools.wmflabs.org/wikidata-todo/quick_statements.php
 */
-class PropertyValue {
+class PropertyValue : public cppcms::serializable {
 
 
 public:
-
 
     PropertyValue(std::string property, Value value)
             : property(property), value(value) {  }
@@ -167,11 +176,20 @@ public:
     }
 
 
+    virtual void serialize(cppcms::archive &a) override;
+
 private:
+    PropertyValue() {}
+
     std::string property;
 
     Value value;
 
+    // needed for (de-)serialization
+    friend class Statement;
+    friend class cppcms::archive;
+    friend void cppcms::details::archive_load_container<PropertyValue>(PropertyValue&, cppcms::archive&);
+    friend void cppcms::details::archive_load_container<std::vector<PropertyValue>>(std::vector<PropertyValue>&, cppcms::archive&);
 };
 
 /**
@@ -180,7 +198,7 @@ private:
 * statement we also store an internal (database) ID that allows to uniquely
 * identify the statement, and the current state of approval.
 */
-class Statement {
+class Statement : public cppcms::serializable {
  public:
     typedef std::vector<PropertyValue> extensions_t;
 
@@ -240,7 +258,12 @@ class Statement {
     */
     ApprovalState getApprovalState() const { return approved; }
 
- private:
+
+    virtual void serialize(cppcms::archive &a) override;
+
+private:
+    Statement() {}
+
     int64_t id;
 
     std::string qid;
@@ -252,6 +275,13 @@ class Statement {
 
 
     ApprovalState approved;
+
+    // needed for (de-)serialization
+    friend class cppcms::archive;
+    friend void cppcms::details::archive_load_container<Statement>(Statement&, cppcms::archive&);
+    friend void cppcms::details::archive_load_container<std::vector<Statement>>(std::vector<Statement>&, cppcms::archive&);
 };
 
 #endif  // HAVE_STATEMENT_H_
+
+

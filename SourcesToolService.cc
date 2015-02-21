@@ -8,10 +8,14 @@
 #include <cppcms/http_request.h>
 #include <cppcms/url_dispatcher.h>
 #include <cppcms/url_mapper.h>
+#include <cppcms/cache_interface.h>
+#include <cppcms/serialization.h>
 
 #include "SerializerTSV.h"
 #include "SerializerJSON.h"
 #include "Persistence.h"
+
+
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
         : cppcms::application(srv), backend(settings()["database"]) {
@@ -35,6 +39,7 @@ SourcesToolService::SourcesToolService(cppcms::service &srv)
     dispatcher().assign("/statements/any",
             &SourcesToolService::getRandomStatements, this);
     mapper().assign("stmt_by_random", "/statements/any");
+
 }
 
 void SourcesToolService::handleGetPostStatement(std::string stid) {
@@ -48,7 +53,7 @@ void SourcesToolService::handleGetPostStatement(std::string stid) {
 void SourcesToolService::getEntityByQID(std::string qid) {
     clock_t begin = std::clock();
 
-    std::vector<Statement> statements = backend.getStatementsByQID(qid, true);
+    std::vector<Statement> statements = backend.getStatementsByQID(cache(), qid, true);
 
     if (statements.size() > 0) {
         serializeStatements(statements);
@@ -67,7 +72,7 @@ void SourcesToolService::getRandomEntity() {
 
     clock_t begin = std::clock();
 
-    std::vector<Statement> statements = backend.getStatementsByRandomQID(true);
+    std::vector<Statement> statements = backend.getStatementsByRandomQID(cache(), true);
 
     if (statements.size() > 0) {
         serializeStatements(statements);
@@ -108,8 +113,8 @@ void SourcesToolService::approveStatement(int64_t stid) {
 
     // check if statement exists and update it with new state
     try {
-        Statement st = backend.getStatementByID(stid);
-        backend.updateStatement(stid, state, request().get("user"));
+        Statement st = backend.getStatementByID(cache(), stid);
+        backend.updateStatement(cache(), stid, state, request().get("user"));
     } catch(PersistenceException const &e) {
         response().status(404, "Statement not found");
     }
@@ -125,7 +130,7 @@ void SourcesToolService::getStatement(int64_t stid) {
 
     // query for statement, wrap it in a vector and return it
     try {
-        std::vector<Statement> statements = { backend.getStatementByID(stid) };
+        std::vector<Statement> statements = { backend.getStatementByID(cache(), stid) };
         serializeStatements(statements);
     } catch(PersistenceException const &e) {
         std::cerr << "error: " << e.what() << std::endl;
@@ -146,7 +151,7 @@ void SourcesToolService::getRandomStatements() {
         count = std::stoi(request().get("count"));
     }
 
-    serializeStatements(backend.getRandomStatements(count, true));
+    serializeStatements(backend.getRandomStatements(cache(), count, true));
 
     clock_t end = std::clock();
     std::cout << "GET /statements/any time: "

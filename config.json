@@ -6,6 +6,11 @@
     "http" : {
         "script_names" : [ "/hello" ]
     },
+    "cache" : {
+        "backend" : "thread_shared",
+        "memory"  : "512MB",
+        "limit"   : 10000
+    },
     "database": {
         "driver": "sqlite3",
         "name": "fb.db",
