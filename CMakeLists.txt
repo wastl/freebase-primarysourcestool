@@ -19,10 +19,6 @@ find_package (CPPCMS REQUIRED)
 find_package (CPPDB REQUIRED)
 find_package (Boost 1.55.0 REQUIRED COMPONENTS iostreams regex)
 
-FIND_LIBRARY(CPPDB_POSTGRES_BACKEND NAMES cppdb_postgresql)
-FIND_LIBRARY(CPPDB_MYSQL_BACKEND NAMES cppdb_mysql)
-FIND_LIBRARY(CPPDB_SQLITE_BACKEND NAMES cppdb_sqlite3)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_executable(freebase_inject inject.cc Parser.cc Statement.cc Persistence.cc)
