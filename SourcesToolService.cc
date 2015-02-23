@@ -3,6 +3,7 @@
 
 #include "SourcesToolService.h"
 
+#include <booster/log.h>
 #include <cppcms/service.h>
 #include <cppcms/http_response.h>
 #include <cppcms/http_request.h>
@@ -56,13 +57,15 @@ void SourcesToolService::getEntityByQID(std::string qid) {
     std::vector<Statement> statements = backend.getStatementsByQID(cache(), qid, true);
 
     if (statements.size() > 0) {
+        response().set_header("Access-Control-Allow-Origin", "*");
         serializeStatements(statements);
     } else {
         response().status(404, "no statements found for entity "+qid);
     }
 
     clock_t end = std::clock();
-    std::cout << "GET /entities/" << qid << " time: "
+    BOOSTER_NOTICE("sourcestool") << request().remote_addr() << ": "
+            << "GET /entities/" << qid << " time: "
             << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
             << "ms" << std::endl;
 }
@@ -75,13 +78,15 @@ void SourcesToolService::getRandomEntity() {
     std::vector<Statement> statements = backend.getStatementsByRandomQID(cache(), true);
 
     if (statements.size() > 0) {
+        response().set_header("Access-Control-Allow-Origin", "*");
         serializeStatements(statements);
     } else {
         response().status(404, "no random unapproved entity found");
     }
 
     clock_t end = std::clock();
-    std::cout << "GET /entities/any time: "
+    BOOSTER_NOTICE("sourcestool") << request().remote_addr() << ": "
+            << "GET /entities/any time: "
             << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
             << "ms" << std::endl;
 }
@@ -120,7 +125,8 @@ void SourcesToolService::approveStatement(int64_t stid) {
     }
 
     clock_t end = std::clock();
-    std::cout << "POST /statements/" << stid << " time: "
+    BOOSTER_NOTICE("sourcestool") << request().remote_addr() << ": "
+              << "POST /statements/" << stid << " time: "
               << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
               << "ms" << std::endl;
 }
@@ -131,6 +137,7 @@ void SourcesToolService::getStatement(int64_t stid) {
     // query for statement, wrap it in a vector and return it
     try {
         std::vector<Statement> statements = { backend.getStatementByID(cache(), stid) };
+        response().set_header("Access-Control-Allow-Origin", "*");
         serializeStatements(statements);
     } catch(PersistenceException const &e) {
         std::cerr << "error: " << e.what() << std::endl;
@@ -138,7 +145,8 @@ void SourcesToolService::getStatement(int64_t stid) {
     }
 
     clock_t end = std::clock();
-    std::cout << "GET /statements/" << stid << " time: "
+    BOOSTER_NOTICE("sourcestool") << request().remote_addr() << ": "
+            << "GET /statements/" << stid << " time: "
             << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
             << "ms" << std::endl;
 }
@@ -151,10 +159,12 @@ void SourcesToolService::getRandomStatements() {
         count = std::stoi(request().get("count"));
     }
 
+    response().set_header("Access-Control-Allow-Origin", "*");
     serializeStatements(backend.getRandomStatements(cache(), count, true));
 
     clock_t end = std::clock();
-    std::cout << "GET /statements/any time: "
+    BOOSTER_NOTICE("sourcestool") << request().remote_addr() << ": "
+            << "GET /statements/any time: "
             << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
             << "ms" << std::endl;
 }

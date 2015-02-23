@@ -6,6 +6,9 @@
     "http" : {
         "script_names" : [ "/hello" ]
     },
+    "logging" : {
+        "level" : "notice"
+    },
     "cache" : {
         "backend" : "thread_shared",
         "memory"  : "512MB",
