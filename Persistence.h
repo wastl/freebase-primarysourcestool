@@ -11,13 +11,13 @@
 
 
 class PersistenceException : public std::exception {
-public:
+ public:
+    explicit PersistenceException(const std::string &message)
+            : message(message) { }
 
-    PersistenceException(const std::string &message) : message(message) { }
+    const char *what() const noexcept override;
 
-    virtual const char *what() const noexcept override;
-
-private:
+ private:
     std::string message;
 };
 
@@ -28,8 +28,7 @@ private:
 * Implements a certain level of caching using the cppcms caching functionality.
 */
 class Persistence {
-public:
-
+ public:
     /**
     * Create a new persistence layer using the given database session. If
     * managedTransactions is given and set to true, the persistence assumes
@@ -98,11 +97,18 @@ public:
 //    std::string getRandomQIDByTopic(
 //            const std::string& topic, bool unapprovedOnly);
 
-private:
+ private:
     // reference to the wrapped sql session
     cppdb::session& sql;
 
     bool managedTransactions;
+
+    int64_t addSnak(const PropertyValue &pv);
+
+    PropertyValue getSnak(int64_t snakid);
+
+    Statement buildStatement(int64_t id, std::string qid,
+                             int64_t snak, int16_t state);
 };
 
 #endif  // HAVE_PERSISTENCE_H_
