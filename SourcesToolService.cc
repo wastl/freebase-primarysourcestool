@@ -9,8 +9,6 @@
 #include <cppcms/http_request.h>
 #include <cppcms/url_dispatcher.h>
 #include <cppcms/url_mapper.h>
-#include <cppcms/cache_interface.h>
-#include <cppcms/serialization.h>
 
 #include "SerializerTSV.h"
 #include "SerializerJSON.h"
