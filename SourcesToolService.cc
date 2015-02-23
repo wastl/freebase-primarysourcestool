@@ -173,15 +173,15 @@ void SourcesToolService::serializeStatements(const std::vector<Statement> &state
             || request().http_accept() == "text/tsv") {
         response().content_type("text/vnd.wikidata+tsv");
 
-        Serializer::writeTSV(statements.cbegin(), statements.cend(), response().out());
+        Serializer::writeTSV(statements.cbegin(), statements.cend(), &response().out());
     } else if(request().http_accept() == "application/wikidata+json") {
         response().content_type("application/vnd.wikidata+json");
 
-        Serializer::writeWikidataJSON(statements.cbegin(), statements.cend(), response().out());
+        Serializer::writeWikidataJSON(statements.cbegin(), statements.cend(), &response().out());
     } else {
         response().content_type("application/vnd.wikidata.envelope+json");
 
-        Serializer::writeEnvelopeJSON(statements.cbegin(), statements.cend(), response().out());
+        Serializer::writeEnvelopeJSON(statements.cbegin(), statements.cend(), &response().out());
     }
 }
 

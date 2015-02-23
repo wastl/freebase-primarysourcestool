@@ -21,7 +21,8 @@ namespace Serializer {
     * https://www.mediawiki.org/wiki/Wikibase/Notes/JSON .
     * Each statement is represented as a "claim" in the Wikidata terminology.
     */
-    void writeStatementWikidataJSON(const Statement& stmt, cppcms::json::value& result);
+    void writeStatementWikidataJSON(
+            const Statement& stmt, cppcms::json::value* result);
 
 
     /**
@@ -31,19 +32,17 @@ namespace Serializer {
     * Each statement is represented as a "claim" in the Wikidata terminology.
     */
     template<typename Iterator>
-    void writeWikidataJSON(Iterator begin, Iterator end, std::ostream &out) {
-
+    void writeWikidataJSON(Iterator begin, Iterator end, std::ostream* out) {
         cppcms::json::value entities;
 
-        for(; begin != end; ++begin) {
-            writeStatementWikidataJSON(*begin, entities);
+        for (; begin != end; ++begin) {
+            writeStatementWikidataJSON(*begin, &entities);
         }
 
         cppcms::json::value result;
         result["entities"] = entities;
-        result.save(out, cppcms::json::readable);
+        result.save(*out, cppcms::json::readable);
     }
 
-}
-
-#endif // HAVE_SERIALIZERJSON_H_
+}  // namespace Serializer
+#endif  // HAVE_SERIALIZERJSON_H_

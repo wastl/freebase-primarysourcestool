@@ -13,9 +13,10 @@
 
 namespace Serializer {
 
-    void writeStatementTSV(const Statement& stmt, std::ostream &out);
+    void writeStatementTSV(const Statement& stmt, std::ostream* out);
 
-    void writeStatementEnvelopeJSON(const Statement& stmt, cppcms::json::value &out);
+    void writeStatementEnvelopeJSON(
+            const Statement& stmt, cppcms::json::value* out);
 
     /**
     * Write a sequence of statements to the output stream using the TSV format
@@ -23,8 +24,8 @@ namespace Serializer {
     * (http://tools.wmflabs.org/wikidata-todo/quick_statements.php)
     */
     template<typename Iterator>
-    void writeTSV(Iterator begin, Iterator end, std::ostream &out) {
-        for(; begin != end; ++begin) {
+    void writeTSV(Iterator begin, Iterator end, std::ostream* out) {
+        for (; begin != end; ++begin) {
             writeStatementTSV(*begin, out);
         }
     }
@@ -40,18 +41,16 @@ namespace Serializer {
     *
     */
     template<typename Iterator>
-    void writeEnvelopeJSON(Iterator begin, Iterator end, std::ostream &out) {
-
+    void writeEnvelopeJSON(Iterator begin, Iterator end, std::ostream* out) {
         cppcms::json::value result;
 
-        for(int count = 0; begin != end; ++begin, ++count) {
-            writeStatementEnvelopeJSON(*begin, result[count]);
+        for (int count = 0; begin != end; ++begin, ++count) {
+            writeStatementEnvelopeJSON(*begin, &result[count]);
         }
 
-        result.save(out, cppcms::json::readable);
+        result.save(*out, cppcms::json::readable);
     }
 
 
 }  // namespace Serializer
-
 #endif  // HAVE_SERIALIZER_TSV_H_
