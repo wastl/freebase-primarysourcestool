@@ -16,17 +16,22 @@ namespace Serializer {
             case ITEM: {
                 const std::string &qid = pv.getValue().getString();
                 snak["datavalue"]["type"] = "wikibase-entityid";
-                if (qid[0] == 'Q') {
-                    snak["datavalue"]["value"]["entity-type"] = "item";
-                } else if (qid[0] == 'P') {
-                    snak["datavalue"]["value"]["entity-type"] = "property";
-                } else if (qid[0] == 'S') {
-                    snak["datavalue"]["value"]["entity-type"] = "source";
-                } else {
-                    snak["datavalue"]["value"]["entity-type"] = "unknown";
+                switch (qid[0]) {
+                    case 'Q':
+                        snak["datavalue"]["value"]["entity-type"] = "item";
+                        break;
+                    case 'P':
+                        snak["datavalue"]["value"]["entity-type"] = "property";
+                        break;
+                    case 'S':
+                        snak["datavalue"]["value"]["entity-type"] = "source";
+                        break;
+                    default:
+                        snak["datavalue"]["value"]["entity-type"] = "unknown";
+                        break;
                 }
                 snak["datavalue"]["value"]["numeric-id"] =
-                        atol(v.getString().substr(1).c_str());
+                        atol(v.getString().c_str() + 1);
             }
                 break;
             case STRING: {;

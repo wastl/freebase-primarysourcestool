@@ -54,4 +54,4 @@ namespace Serializer {
 
 }  // namespace Serializer
 
-#endif
+#endif  // HAVE_SERIALIZER_TSV_H_
