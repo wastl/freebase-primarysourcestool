@@ -25,19 +25,18 @@ PropertyValue parsePropertyValue(std::string property, std::string value) {
     // text (en:"He's a jolly good fellow")
     static boost::regex re_text("\\s*(?:(\\w{2}):)?\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"\\s*");
 
-
     boost::smatch sm;
     if (boost::regex_match(value, sm, re_entity)) {
         return PropertyValue(property, Value(sm[1]));
-    } else if(boost::regex_match(value, re_num)) {
+    } else if (boost::regex_match(value, re_num)) {
         return PropertyValue(property, Value(decimal_t(value)));
-    } else if(boost::regex_match(value, sm, re_loc)) {
+    } else if (boost::regex_match(value, sm, re_loc)) {
         return PropertyValue(
                 property,
                 Value(std::stod(sm.str(1)), std::stod(sm.str(2))));
-    } else if(boost::regex_match(value, sm, re_text)) {
+    } else if (boost::regex_match(value, sm, re_text)) {
         return PropertyValue(property, Value(sm.str(2), sm.str(1)));
-    } else if(boost::regex_match(value, sm, re_time)) {
+    } else if (boost::regex_match(value, sm, re_time)) {
         std::tm time = {
                 // sec, min, hour
                 std::stoi(sm[6]), std::stoi(sm[5]), std::stoi(sm[4]),
@@ -58,18 +57,15 @@ void Parser::parseTSV(std::istream &in, std::function<void(Statement)> handler) 
     std::vector< std::string > vec;
     std::string line;
 
-    long id = 0;
-    while (getline(in,line))
-    {
+    while (std::getline(in, line)) {
         Tokenizer tok(line, sep);
-        vec.assign(tok.begin(),tok.end());
+        vec.assign(tok.begin(), tok.end());
 
         Statement::extensions_t qualifiers, sources;
 
         // 0, 1, 2 are subject, predicate and object; everything that follows
         // is a qualifier or source, depending on first letter of predicate.
-        for(int i=3; i+1 < vec.size(); i += 2) {
-
+        for (int i=3; i+1 < vec.size(); i += 2) {
             if (vec[i][0] == 'S') {
                 sources.push_back(parsePropertyValue(vec[i], vec[i+1]));
             } else {
@@ -77,7 +73,7 @@ void Parser::parseTSV(std::istream &in, std::function<void(Statement)> handler) 
             }
         }
 
-        handler(Statement(-1, vec[0], parsePropertyValue(vec[1],vec[2]), qualifiers, sources, UNAPPROVED));
+        handler(Statement(-1, vec[0], parsePropertyValue(vec[1], vec[2]),
+                          qualifiers, sources, UNAPPROVED));
     }
-
 }

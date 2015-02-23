@@ -105,4 +105,4 @@ private:
     bool managedTransactions;
 };
 
-#endif
+#endif  // HAVE_PERSISTENCE_H_

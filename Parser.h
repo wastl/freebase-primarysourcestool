@@ -19,4 +19,4 @@ namespace Parser {
 
 }  // namespace Parser
 
-#endif
+#endif  // HAVE_PARSER_H_
