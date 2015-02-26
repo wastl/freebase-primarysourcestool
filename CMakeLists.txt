@@ -17,7 +17,7 @@ ADD_DEFINITIONS(
 find_package (Threads)
 find_package (CPPCMS REQUIRED)
 find_package (CPPDB REQUIRED)
-find_package (Boost 1.55.0 REQUIRED COMPONENTS iostreams regex)
+find_package (Boost 1.54.0 REQUIRED COMPONENTS iostreams regex)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
