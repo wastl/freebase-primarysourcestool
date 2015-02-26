@@ -40,7 +40,7 @@ SourcesToolService::SourcesToolService(cppcms::service &srv)
     mapper().assign("stmt_by_random", "/statements/any");
 
     // human-readable welcome page
-    dispatcher().assign("", &SourcesToolService:::welcome, this);
+    dispatcher().assign("", &SourcesToolService::welcome, this);
     mapper().assign("");
 }
 
