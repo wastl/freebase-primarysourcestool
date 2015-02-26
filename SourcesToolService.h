@@ -20,6 +20,11 @@ public:
    SourcesToolService(cppcms::service &srv);
 
    /**
+   * Display a human-readable welcome page explaining the REST API.
+   */
+   void welcome();
+
+   /**
    * Return the entity identified by the given QID and write it to the
    * response. The format is determined by content negotiation (either
    * text/tsv, application/vnd.wikidata+json or application/json).
