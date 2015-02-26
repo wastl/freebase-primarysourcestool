@@ -26,3 +26,6 @@ add_executable(freebase_backend main.cc SourcesToolService.cc SourcesToolBackend
 
 target_link_libraries(freebase_backend ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARIES} ${LIBCPPDB_LIBRARY} ${CPPDB_SQLITE_BACKEND} ${Boost_LIBRARIES})
 target_link_libraries(freebase_inject ${CMAKE_THREAD_LIBS_INIT} ${LIBCPPCMS_LIBRARIES} ${LIBCPPDB_LIBRARY} ${CPPDB_SQLITE_BACKEND} ${Boost_LIBRARIES})
+
+install(TARGETS freebase_inject freebase_backend
+        RUNTIME DESTINATION bin)
