@@ -63,8 +63,9 @@ void SourcesToolService::getEntityByQID(std::string qid) {
 
     std::vector<Statement> statements = backend.getStatementsByQID(cache(), qid, true);
 
+    response().set_header("Access-Control-Allow-Origin", "*");
+
     if (statements.size() > 0) {
-        response().set_header("Access-Control-Allow-Origin", "*");
         serializeStatements(statements);
     } else {
         response().status(404, "no statements found for entity "+qid);
@@ -84,8 +85,9 @@ void SourcesToolService::getRandomEntity() {
 
     std::vector<Statement> statements = backend.getStatementsByRandomQID(cache(), true);
 
+    response().set_header("Access-Control-Allow-Origin", "*");
+
     if (statements.size() > 0) {
-        response().set_header("Access-Control-Allow-Origin", "*");
         serializeStatements(statements);
     } else {
         response().status(404, "no random unapproved entity found");
@@ -102,6 +104,8 @@ void SourcesToolService::approveStatement(int64_t stid) {
     clock_t begin = std::clock();
 
     ApprovalState state = UNAPPROVED;
+
+    response().set_header("Access-Control-Allow-Origin", "*");
 
     // return 403 forbidden when there is no user given
     if (request().get("user") == "") {
@@ -141,10 +145,11 @@ void SourcesToolService::approveStatement(int64_t stid) {
 void SourcesToolService::getStatement(int64_t stid) {
     clock_t begin = std::clock();
 
+    response().set_header("Access-Control-Allow-Origin", "*");
+
     // query for statement, wrap it in a vector and return it
     try {
         std::vector<Statement> statements = { backend.getStatementByID(cache(), stid) };
-        response().set_header("Access-Control-Allow-Origin", "*");
         serializeStatements(statements);
     } catch(PersistenceException const &e) {
         std::cerr << "error: " << e.what() << std::endl;
