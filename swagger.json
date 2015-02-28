@@ -12,7 +12,7 @@
     "basePath": "/wikidata-primary-sources",
     "produces": [
         "application/json",
-        "application/wikidata+json",
+        "application/vnd.wikidata+json",
         "text/tsv"
     ],
     "paths": {
