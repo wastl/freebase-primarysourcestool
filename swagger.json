@@ -142,6 +142,16 @@
             "get": {
                 "summary": "Get Random Statement",
                 "description": "The statements endpoint returns a random individual unapproved statement.\nThe statement is returned in Wikidata JSON format, plain JSON format,\nor TSV format, depending on the value of the Accept header.\n",
+                "parameters": [
+                    {
+                        "name": "count",
+                        "in": "query",
+                        "description": "maximum number of random statements to return (default: 10)",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "statment with ID found and updated, returned according to Accept header\n"
