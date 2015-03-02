@@ -39,16 +39,8 @@ SourcesToolService::SourcesToolService(cppcms::service &srv)
             &SourcesToolService::getRandomStatements, this);
     mapper().assign("stmt_by_random", "/statements/any");
 
-    // human-readable welcome page
-    dispatcher().assign("", &SourcesToolService::welcome, this);
-    mapper().assign("");
 }
 
-
-void SourcesToolService::welcome() {
-    response().set_header("Location", url("/swagger"));
-    response().status(303);
-}
 
 void SourcesToolService::handleGetPostStatement(std::string stid) {
     if (request().request_method() == "POST") {
