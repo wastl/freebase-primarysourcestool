@@ -39,16 +39,8 @@ SourcesToolService::SourcesToolService(cppcms::service &srv)
             &SourcesToolService::getRandomStatements, this);
     mapper().assign("stmt_by_random", "/statements/any");
 
-    // human-readable welcome page
-    dispatcher().assign("", &SourcesToolService::welcome, this);
-    mapper().assign("");
 }
 
-
-void SourcesToolService::welcome() {
-    response().set_header("Location", url("/swagger"));
-    response().status(303);
-}
 
 void SourcesToolService::handleGetPostStatement(std::string stid) {
     if (request().request_method() == "POST") {
@@ -188,7 +180,7 @@ void SourcesToolService::serializeStatements(const std::vector<Statement> &state
         response().content_type("text/vnd.wikidata+tsv");
 
         Serializer::writeTSV(statements.cbegin(), statements.cend(), &response().out());
-    } else if(request().http_accept() == "application/wikidata+json") {
+    } else if(request().http_accept() == "application/vnd.wikidata+json") {
         response().content_type("application/vnd.wikidata+json");
 
         Serializer::writeWikidataJSON(statements.cbegin(), statements.cend(), &response().out());
