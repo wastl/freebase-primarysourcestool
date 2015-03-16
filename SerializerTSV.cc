@@ -47,7 +47,7 @@ namespace Serializer {
 
     void writeStatementTSV(const Statement& stmt, std::ostream* out) {
         *out << stmt.getQID() << "\t"
-                << stmt.getProperty() << "\t";
+             << stmt.getProperty() << "\t";
         writeValueTSV(stmt.getValue(), out);
 
         for (const PropertyValue& pv : stmt.getQualifiers()) {

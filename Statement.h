@@ -25,7 +25,7 @@ enum ValueType {
 typedef boost::multiprecision::cpp_dec_float_50 decimal_t;
 
 // define locations as pairs of doubles
-typedef std::pair<double,double> location_t;
+typedef std::pair<double, double> location_t;
 
 /**
 * Representation of a Wikidata value. Wikidata values can be of several
@@ -38,7 +38,7 @@ typedef std::pair<double,double> location_t;
 * simpler.
 */
 class Value : public cppcms::serializable {
-public:
+ public:
     /**
     * Initialise a value of type ITEM using the QID passed as argument.
     */
@@ -49,19 +49,22 @@ public:
     * passed as argument. Strings without language use empty string as
     * language.
     */
-    explicit Value(std::string s, std::string lang) : str(s), lang(lang), type(STRING) { }
+    explicit Value(std::string s, std::string lang)
+            : str(s), lang(lang), type(STRING) { }
 
     /**
     * Initialise a value of type TIME using the time structure and precision
     * given as argument.
     */
-    explicit Value(std::tm t, int precision) : time(t), precision(precision), type(TIME) { }
+    explicit Value(std::tm t, int precision)
+            : time(t), precision(precision), type(TIME) { }
 
     /**
     * Initialise a value if type LOCATION using the latitude and longitude
     * given as argument.
     */
-    explicit Value(double lat, double lng) : loc(std::make_pair(lat,lng)), type(LOCATION) { }
+    explicit Value(double lat, double lng)
+            : loc(std::make_pair(lat, lng)), type(LOCATION) { }
 
     /**
     * Initialise a value of type QUANTITY using the multiprecision decimal
@@ -128,9 +131,9 @@ public:
     }
 
 
-    virtual void serialize(cppcms::archive &a) override;
+    void serialize(cppcms::archive &a) override;
 
-private:
+ private:
     Value() {}
 
     std::string str, lang;
@@ -155,10 +158,7 @@ private:
 * described at http://tools.wmflabs.org/wikidata-todo/quick_statements.php
 */
 class PropertyValue : public cppcms::serializable {
-
-
-public:
-
+ public:
     PropertyValue(std::string property, Value value)
             : property(property), value(value) {  }
 
@@ -176,9 +176,9 @@ public:
     }
 
 
-    virtual void serialize(cppcms::archive &a) override;
+    void serialize(cppcms::archive &a) override;
 
-private:
+ private:
     PropertyValue() {}
 
     std::string property;
@@ -203,10 +203,12 @@ class Statement : public cppcms::serializable {
     typedef std::vector<PropertyValue> extensions_t;
 
 
-    // main constructor; will be called usually in a parser or with database results
-    // so we use copy by value and rely on the compiler to optimize using rvalues
+    // main constructor; will be called usually in a parser or with database
+    // results so we use copy by value and rely on the compiler to optimize
+    // using rvalues
     Statement(int64_t id, std::string qid, PropertyValue propertyValue,
-              extensions_t qualifiers, extensions_t sources, ApprovalState approved)
+              extensions_t qualifiers, extensions_t sources,
+              ApprovalState approved)
             : id(id), qid(qid), propertyValue(propertyValue),
               qualifiers(qualifiers), sources(sources), approved(approved) { }
 
@@ -259,9 +261,9 @@ class Statement : public cppcms::serializable {
     ApprovalState getApprovalState() const { return approved; }
 
 
-    virtual void serialize(cppcms::archive &a) override;
+    void serialize(cppcms::archive &a) override;
 
-private:
+ private:
     Statement() {}
 
     int64_t id;
@@ -283,5 +285,3 @@ private:
 };
 
 #endif  // HAVE_STATEMENT_H_
-
-
