@@ -249,5 +249,5 @@ void SourcesToolService::addCORSHeaders() {
 }
 
 void SourcesToolService::addVersionHeaders() {
-    response().set_header("X-SourcesTool-Version", GIT_SHA1);
+    response().set_header("X-Powered-By", std::string("Wikidata Sources Tool/") + GIT_SHA1);
 }
