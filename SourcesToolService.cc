@@ -201,6 +201,8 @@ void SourcesToolService::serializeStatements(const std::vector<Statement> &state
 }
 
 void SourcesToolService::importStatements() {
+    addVersionHeaders();
+
     if (request().request_method() == "POST") {
         clock_t begin = std::clock();
 
