@@ -96,7 +96,7 @@ void SourcesToolService::getRandomEntity() {
 void SourcesToolService::approveStatement(int64_t stid) {
     clock_t begin = std::clock();
 
-    ApprovalState state = UNAPPROVED;
+    ApprovalState state;
 
     response().set_header("Access-Control-Allow-Origin", "*");
 
