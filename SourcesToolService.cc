@@ -77,11 +77,10 @@ void SourcesToolService::getRandomEntity() {
 
     clock_t begin = std::clock();
 
-    std::vector<Statement> statements = backend.getStatementsByRandomQID(cache(), true);
-
     response().set_header("Access-Control-Allow-Origin", "*");
 
     try {
+        std::vector<Statement> statements = backend.getStatementsByRandomQID(cache(), true);
         serializeStatements(statements);
     } catch(PersistenceException const &e) {
         response().status(404, "no random unapproved entity found");
