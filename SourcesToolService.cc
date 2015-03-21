@@ -99,8 +99,9 @@ void SourcesToolService::approveStatement(int64_t stid) {
 
     response().set_header("Access-Control-Allow-Origin", "*");
 
-    // return 403 forbidden when there is no user given
-    if (request().get("user") == "") {
+    // return 403 forbidden when there is no user given or the username is too
+    // long for the database
+    if (request().get("user") == "" || request().get("user").length() > 64) {
         response().status(403, "Forbidden: invalid or missing user");
         return;
     }

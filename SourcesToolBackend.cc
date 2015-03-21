@@ -100,12 +100,11 @@ void SourcesToolBackend::updateStatement(
 
     Persistence p(sql);
     p.updateStatement(id, state);
+    p.addUserlog(user, id, state);
 
     // update cache
     Statement st = p.getStatement(id);
     cache.rise(st.getQID());
-
-    // TODO: add user information about approval
 }
 
 std::vector<Statement> SourcesToolBackend::getStatementsByRandomQID(
