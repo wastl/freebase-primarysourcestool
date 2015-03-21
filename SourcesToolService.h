@@ -130,6 +130,12 @@ private:
    // serialize list of statements according to content negotiation
    void serializeStatements(const std::vector<Statement>& stmts);
 
+   // add the CORS headers to the response
+   void addCORSHeaders();
+
+   // add the sourcestool version header to the response
+   void addVersionHeaders();
+
    SourcesToolBackend backend;
 
 };

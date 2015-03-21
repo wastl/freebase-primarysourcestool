@@ -14,6 +14,7 @@
 #include "SerializerJSON.h"
 #include "Persistence.h"
 #include "Membuf.h"
+#include "Version.h"
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
         : cppcms::application(srv), backend(settings()["database"]) {
@@ -57,7 +58,8 @@ void SourcesToolService::getEntityByQID(std::string qid) {
 
     std::vector<Statement> statements = backend.getStatementsByQID(cache(), qid, true);
 
-    response().set_header("Access-Control-Allow-Origin", "*");
+    addCORSHeaders();
+    addVersionHeaders();
 
     if (statements.size() > 0) {
         serializeStatements(statements);
@@ -77,7 +79,8 @@ void SourcesToolService::getRandomEntity() {
 
     clock_t begin = std::clock();
 
-    response().set_header("Access-Control-Allow-Origin", "*");
+    addCORSHeaders();
+    addVersionHeaders();
 
     try {
         std::vector<Statement> statements = backend.getStatementsByRandomQID(cache(), true);
@@ -98,7 +101,8 @@ void SourcesToolService::approveStatement(int64_t stid) {
 
     ApprovalState state;
 
-    response().set_header("Access-Control-Allow-Origin", "*");
+    addCORSHeaders();
+    addVersionHeaders();
 
     // return 403 forbidden when there is no user given or the username is too
     // long for the database
@@ -139,7 +143,8 @@ void SourcesToolService::approveStatement(int64_t stid) {
 void SourcesToolService::getStatement(int64_t stid) {
     clock_t begin = std::clock();
 
-    response().set_header("Access-Control-Allow-Origin", "*");
+    addCORSHeaders();
+    addVersionHeaders();
 
     // query for statement, wrap it in a vector and return it
     try {
@@ -165,7 +170,9 @@ void SourcesToolService::getRandomStatements() {
         count = std::stoi(request().get("count"));
     }
 
-    response().set_header("Access-Control-Allow-Origin", "*");
+    addCORSHeaders();
+    addVersionHeaders();
+
     serializeStatements(backend.getRandomStatements(cache(), count, true));
 
     clock_t end = std::clock();
@@ -228,4 +235,12 @@ void SourcesToolService::importStatements() {
         response().status(405, "Method not allowed");
         response().set_header("Allow", "POST");
     }
+}
+
+void SourcesToolService::addCORSHeaders() {
+    response().set_header("Access-Control-Allow-Origin", "*");
+}
+
+void SourcesToolService::addVersionHeaders() {
+    response().set_header("X-SourcesTool-Version", GIT_SHA1);
 }
