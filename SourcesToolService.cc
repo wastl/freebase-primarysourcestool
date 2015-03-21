@@ -13,8 +13,7 @@
 #include "SerializerTSV.h"
 #include "SerializerJSON.h"
 #include "Persistence.h"
-
-
+#include "Membuf.h"
 
 SourcesToolService::SourcesToolService(cppcms::service &srv)
         : cppcms::application(srv), backend(settings()["database"]) {
@@ -39,6 +38,9 @@ SourcesToolService::SourcesToolService(cppcms::service &srv)
             &SourcesToolService::getRandomStatements, this);
     mapper().assign("stmt_by_random", "/statements/any");
 
+    dispatcher().assign("/import",
+            &SourcesToolService::importStatements, this);
+    mapper().assign("import", "/import");
 }
 
 
@@ -192,3 +194,39 @@ void SourcesToolService::serializeStatements(const std::vector<Statement> &state
     }
 }
 
+void SourcesToolService::importStatements() {
+    if (request().request_method() == "POST") {
+        clock_t begin = std::clock();
+
+        // check if token matches
+        if (request().get("token") != settings()["token"].str()) {
+            response().status(401, "Invalid authorization token");
+            return;
+        }
+
+        // check if content is gzipped
+        bool gzip = false;
+        if (request().get("gzip") == "true") {
+            gzip = true;
+        }
+
+        // wrap raw post data into a memory stream
+        Membuf body(request().raw_post_data());
+        std::istream in(&body);
+
+        // import statements
+        int64_t count = backend.importStatements(in, gzip);
+
+        response().content_type("application/json");
+        response().out() << "{ \"count\": " << count << " }" << std::endl;
+
+        clock_t end = std::clock();
+        BOOSTER_NOTICE("sourcestool") << request().remote_addr() << ": "
+                << "POST /import time: "
+                << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
+                << "ms" << std::endl;
+    } else {
+        response().status(405, "Method not allowed");
+        response().set_header("Allow", "POST");
+    }
+}

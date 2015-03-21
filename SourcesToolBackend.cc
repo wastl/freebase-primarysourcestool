@@ -5,6 +5,11 @@
 
 #include <sstream>
 #include <iostream>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+
+#include "Parser.h"
 
 #include "Persistence.h"
 
@@ -126,4 +131,36 @@ std::vector<Statement> SourcesToolBackend::getStatementsByRandomQID(
     }
 
     return statements;
+}
+
+int64_t SourcesToolBackend::importStatements(std::istream &_in, bool gzip) {
+    boost::iostreams::filtering_istreambuf zin;
+    if (gzip) {
+        zin.push(boost::iostreams::gzip_decompressor());
+    }
+    zin.push(_in);
+
+    std::istream in(&zin);
+
+    clock_t begin = std::clock();
+
+    cppdb::session sql(connstr); // released when sql is destroyed
+
+    sql.begin();
+    Persistence p(sql, true);
+
+    int64_t count = 0;
+    Parser::parseTSV(in, [&sql, &p, &count](Statement st)  {
+        p.addStatement(st);
+        count++;
+
+        // batch commit
+        if(count % 100000 == 0) {
+            sql.commit();
+            sql.begin();
+        }
+    });
+    sql.commit();
+
+    return count;
 }
