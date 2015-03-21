@@ -139,10 +139,7 @@ int64_t SourcesToolBackend::importStatements(std::istream &_in, bool gzip) {
         zin.push(boost::iostreams::gzip_decompressor());
     }
     zin.push(_in);
-
     std::istream in(&zin);
-
-    clock_t begin = std::clock();
 
     cppdb::session sql(connstr); // released when sql is destroyed
 
