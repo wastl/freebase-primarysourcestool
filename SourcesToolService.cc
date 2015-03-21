@@ -81,9 +81,9 @@ void SourcesToolService::getRandomEntity() {
 
     response().set_header("Access-Control-Allow-Origin", "*");
 
-    if (statements.size() > 0) {
+    try {
         serializeStatements(statements);
-    } else {
+    } catch(PersistenceException const &e) {
         response().status(404, "no random unapproved entity found");
     }
 
