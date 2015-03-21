@@ -225,10 +225,15 @@ void SourcesToolService::importStatements() {
         // import statements
         int64_t count = backend.importStatements(in, gzip);
 
-        response().content_type("application/json");
-        response().out() << "{ \"count\": " << count << " }" << std::endl;
-
         clock_t end = std::clock();
+
+        cppcms::json::value result;
+        result["count"] = count;
+        result["time"] = 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC);
+
+        response().content_type("application/json");
+        result.save(response().out(), cppcms::json::readable);
+
         BOOSTER_NOTICE("sourcestool") << request().remote_addr() << ": "
                 << "POST /import time: "
                 << 1000 * (static_cast<double>(end - begin) / CLOCKS_PER_SEC)
